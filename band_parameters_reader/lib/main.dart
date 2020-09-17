@@ -1,5 +1,7 @@
 import 'package:band_parameters_reader/ui/main/main.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'di/provider_container.dart';
 
@@ -14,6 +16,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        textTheme: GoogleFonts.montserratTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
       title: 'Band Parameters Reader',
       routes: {
