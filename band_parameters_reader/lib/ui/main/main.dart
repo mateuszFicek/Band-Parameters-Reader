@@ -21,7 +21,7 @@ class _BandParametersReaderHomePageState
     return Scaffold(
       backgroundColor: UIColors.BACKGROUND_COLOR,
       body: Container(
-        margin: EdgeInsets.only(top: 250.h, left: 60.w),
+        margin: EdgeInsets.symmetric(vertical: 250.h, horizontal: 60.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -30,8 +30,7 @@ class _BandParametersReaderHomePageState
             _listOfDevicesText,
             _compatibleDevicesListView,
             _availableDevicesText,
-            _availableDevicesDropdownButton,
-            _reloadDevicesText,
+            _availableDevicesListView,
             _reloadButton,
           ],
         ),
@@ -53,9 +52,9 @@ class _BandParametersReaderHomePageState
   Widget get _welcomeText => Container(
         alignment: Alignment.centerLeft,
         child: Text(
-          "Welcome to Parameters Reader",
+          "Welcome to \nParameters Reader",
           style: TextStyle(color: Colors.white, fontSize: 60.w),
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.left,
         ),
       );
 
@@ -81,51 +80,34 @@ class _BandParametersReaderHomePageState
         'Choose your device from available:',
       );
 
-  // maybe change it to listview
-  Widget get _availableDevicesDropdownButton => Container(
-        margin: EdgeInsets.only(right: 350.w),
+  Widget get _availableDevicesListView => Container(
         alignment: Alignment.centerLeft,
-        child: DropdownButton<String>(
-          isExpanded: true,
-          hint: Text(
-            dropdownValue,
-            style: informationTextStyle.copyWith(color: Colors.white),
-          ),
-          elevation: 16,
-          underline: Container(
-            height: 2,
-            color: UIColors.LIGHT_FONT_COLOR,
-          ),
-          onChanged: (String newValue) {
-            setState(() {
-              dropdownValue = newValue;
-            });
-          },
-          items: <String>['Xiaomi MiBand 5', 'Bitalino']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
-                style: TextStyle(color: Colors.black, fontSize: 40.w),
-              ),
-            );
-          }).toList(),
-        ),
-      );
-
-  Widget get _reloadDevicesText => _informationTextWrapper(
-        'Reload available devices',
+        height: 1200.h,
+        child: ListView.builder(
+            itemBuilder: (context, index) => Container(
+                  height: 150.h,
+                  child: Column(
+                    children: [
+                      Text(
+                        Constants.FOUND_DEVICES_MOC.keys.elementAt(index),
+                        style: informationTextStyle.copyWith(fontSize: 40.w),
+                      ),
+                      Text(Constants.FOUND_DEVICES_MOC.values.elementAt(index),
+                          style:
+                              TextStyle(color: Colors.white, fontSize: 30.w)),
+                    ],
+                  ),
+                ),
+            itemCount: Constants.FOUND_DEVICES_MOC.length),
       );
 
   TextStyle get informationTextStyle =>
       TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 40.w);
 
-  Widget get _reloadButton => _buttonWrapper(() {}, 'Reload');
+  Widget get _reloadButton => _buttonWrapper(() {}, 'Reload Devices');
 
   Widget _buttonWrapper(Function onTap, String buttonText) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 40.h),
       alignment: Alignment.center,
       child: Material(
         color: UIColors.LIGHT_FONT_COLOR,
