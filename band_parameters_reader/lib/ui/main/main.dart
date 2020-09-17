@@ -80,26 +80,29 @@ class _BandParametersReaderHomePageState
         'Choose your device from available:',
       );
 
-  Widget get _availableDevicesListView => Container(
-        alignment: Alignment.centerLeft,
-        height: 1200.h,
+  Widget get _availableDevicesListView => Expanded(
         child: ListView.builder(
-            itemBuilder: (context, index) => Container(
-                  height: 150.h,
-                  child: Column(
-                    children: [
-                      Text(
-                        Constants.FOUND_DEVICES_MOC.keys.elementAt(index),
-                        style: informationTextStyle.copyWith(fontSize: 40.w),
-                      ),
-                      Text(Constants.FOUND_DEVICES_MOC.values.elementAt(index),
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 30.w)),
-                    ],
-                  ),
-                ),
+            itemBuilder: (context, index) => _availableDeviceContainer(index),
             itemCount: Constants.FOUND_DEVICES_MOC.length),
       );
+
+  Widget _availableDeviceContainer(int index) {
+    return GestureDetector(
+      child: Container(
+        height: 150.h,
+        child: Column(
+          children: [
+            Text(
+              Constants.FOUND_DEVICES_MOC.keys.elementAt(index),
+              style: informationTextStyle.copyWith(fontSize: 40.w),
+            ),
+            Text(Constants.FOUND_DEVICES_MOC.values.elementAt(index),
+                style: TextStyle(color: Colors.white, fontSize: 30.w)),
+          ],
+        ),
+      ),
+    );
+  }
 
   TextStyle get informationTextStyle =>
       TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 40.w);
