@@ -101,6 +101,8 @@ class BlueManager {
     print(service.uuid);
   }
 
+  heartRateListener() {}
+
   // CLOSE DEVICE CONNECTION
   closeConnection() async {
     final conn = await flutterBlue.connectedDevices;

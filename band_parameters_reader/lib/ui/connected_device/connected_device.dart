@@ -25,7 +25,7 @@ class ConnectedDevicePage extends StatelessWidget {
             children: [
               _deviceNameText(state.connectedDevice),
               LastSessionChart(),
-              _lastMeasuredPersons(),
+              _newSessionAndHeartRateRow(),
             ],
           ),
         ),
@@ -36,9 +36,9 @@ class ConnectedDevicePage extends StatelessWidget {
   Widget _deviceNameText(BluetoothDevice device) => InformationText(
       text: "Your device \n${device.name == '' ? device.id : device.name}");
 
-  Widget _lastMeasuredPersons() {
-    return Builder(
-      builder: (context) => Container(
+  Widget _newSessionAndHeartRateRow() {
+    return BlocBuilder<ConnectedDeviceCubit, ConnectedDeviceState>(
+      builder: (context, state) => Container(
         height: MediaQuery.of(context).size.width / 2 - 90.w,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +64,7 @@ class ConnectedDevicePage extends StatelessWidget {
                       size: 60.w,
                     ),
                     Text(
-                      '84 bpm',
+                      '${state.currentHeartRate} bpm',
                       style: TextStyle(color: Colors.white, fontSize: 60.w),
                     ),
                   ],

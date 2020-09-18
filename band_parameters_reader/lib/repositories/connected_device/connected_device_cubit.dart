@@ -16,4 +16,8 @@ class ConnectedDeviceCubit extends Cubit<ConnectedDeviceState> {
         await BlueManager().connectToDevice(device, buildContext);
     if (isConnected == 2) emit(state.copyWith(connectedDevice: device));
   }
+
+  void updateCurrentHeartRate(int heartRate) {
+    emit(state.copyWith(currentHeartRate: heartRate));
+  }
 }
