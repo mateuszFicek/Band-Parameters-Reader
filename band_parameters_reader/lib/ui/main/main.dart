@@ -1,6 +1,10 @@
+import 'package:band_parameters_reader/repositories/available_devices/available_devices_cubit.dart';
+import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
 import 'package:band_parameters_reader/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BandParametersReaderHomePage extends StatefulWidget {
@@ -21,7 +25,8 @@ class _BandParametersReaderHomePageState
     return Scaffold(
       backgroundColor: UIColors.BACKGROUND_COLOR,
       body: Container(
-        margin: EdgeInsets.symmetric(vertical: 250.h, horizontal: 60.w),
+        margin:
+            EdgeInsets.only(top: 250.h, left: 60.w, right: 60.w, bottom: 140.h),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -53,7 +58,7 @@ class _BandParametersReaderHomePageState
         alignment: Alignment.centerLeft,
         child: Text(
           "Welcome to \nParameters Reader",
-          style: TextStyle(color: Colors.white, fontSize: 60.w),
+          style: TextStyle(color: Colors.white, fontSize: 80.w),
           textAlign: TextAlign.left,
         ),
       );
@@ -81,36 +86,118 @@ class _BandParametersReaderHomePageState
       );
 
   Widget get _availableDevicesListView => Expanded(
-        child: ListView.builder(
-            itemBuilder: (context, index) => _availableDeviceContainer(index),
-            itemCount: Constants.FOUND_DEVICES_MOC.length),
+        child: BlocBuilder<AvailableDevicesCubit, AvailableDevicesState>(
+          builder: (context, state) => ListView.builder(
+              itemBuilder: (context, index) => _availableDeviceContainer(
+                  state.availableDevices.elementAt(index)),
+              itemCount: state.availableDevices.length),
+        ),
       );
 
-  Widget _availableDeviceContainer(int index) {
+  Widget _availableDeviceContainer(BluetoothDevice device) {
+    return StreamBuilder<BluetoothDeviceState>(
+      stream: device.state.asBroadcastStream(),
+      initialData: BluetoothDeviceState.disconnected,
+      builder: (c, snapshot) => snapshot.data.index == 2
+          ? _connectedDeviceContainer(device, snapshot.data.index)
+          : _disconnectedDeviceContainer(device, snapshot.data.index),
+    );
+  }
+
+  Widget _connectedDeviceContainer(BluetoothDevice device, int stateIndex) {
     return GestureDetector(
+      onTap: () => connectToDevice(device, context),
       child: Container(
-        height: 150.h,
+        height: 170.h,
+        padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
+        decoration: BoxDecoration(
+            color: UIColors.LIGHT_FONT_COLOR,
+            borderRadius: BorderRadius.circular(40.w)),
+        alignment: Alignment.centerLeft,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              Constants.FOUND_DEVICES_MOC.keys.elementAt(index),
-              style: informationTextStyle.copyWith(fontSize: 40.w),
+              device.name == '' ? "Unknown name" : device.name,
+              style: TextStyle(fontSize: 40.w, color: Colors.black),
+              textAlign: TextAlign.left,
             ),
-            Text(Constants.FOUND_DEVICES_MOC.values.elementAt(index),
-                style: TextStyle(color: Colors.white, fontSize: 30.w)),
+            Text(
+              _getConnectionState(stateIndex),
+              textAlign: TextAlign.left,
+              style: TextStyle(fontSize: 30.w, color: Colors.black45),
+            ),
+            Text(
+              device.id.toString(),
+              style: TextStyle(fontSize: 30.w, color: Colors.black45),
+              textAlign: TextAlign.left,
+            ),
           ],
         ),
       ),
     );
   }
 
-  TextStyle get informationTextStyle =>
-      TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 40.w);
+  void connectToDevice(BluetoothDevice device, BuildContext context) {
+    context.bloc<ConnectedDeviceCubit>().setConnectedDevice(device, context);
+  }
 
-  Widget get _reloadButton => _buttonWrapper(() {}, 'Reload Devices');
+  Widget _disconnectedDeviceContainer(BluetoothDevice device, int stateIndex) {
+    return Container(
+      height: 170.h,
+      padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
+      alignment: Alignment.centerLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            device.name == '' ? "Unknown name" : device.name,
+            style: informationTextStyle.copyWith(fontSize: 40.w),
+            textAlign: TextAlign.left,
+          ),
+          Text(_getConnectionState(stateIndex),
+              textAlign: TextAlign.left,
+              style: TextStyle(color: Colors.white, fontSize: 30.w)),
+          Text(
+            device.id.toString(),
+            style: TextStyle(color: Colors.white, fontSize: 30.w),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getConnectionState(int index) {
+    switch (index) {
+      case 0:
+        return 'Disconneted';
+        break;
+      case 1:
+        return 'Connecting';
+        break;
+      case 2:
+        return 'Connected';
+        break;
+      case 3:
+        return 'Disconnecting';
+        break;
+      default:
+    }
+  }
+
+  TextStyle get informationTextStyle =>
+      TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
+
+  Widget get _reloadButton => _buttonWrapper(
+      () => context.bloc<AvailableDevicesCubit>().getAvailableDevices(),
+      'Reload Devices');
 
   Widget _buttonWrapper(Function onTap, String buttonText) {
     return Container(
+      margin: EdgeInsets.only(top: 80.h),
       alignment: Alignment.center,
       child: Material(
         color: UIColors.LIGHT_FONT_COLOR,
@@ -120,8 +207,8 @@ class _BandParametersReaderHomePageState
           onTap: onTap,
           borderRadius: BorderRadius.circular(40.w),
           child: Container(
-            width: 400.w,
-            height: 100.h,
+            width: 500.w,
+            height: 140.h,
             alignment: Alignment.center,
             decoration:
                 BoxDecoration(borderRadius: BorderRadius.circular(40.w)),
@@ -137,5 +224,5 @@ class _BandParametersReaderHomePageState
   }
 
   TextStyle get _buttonTextStyle =>
-      TextStyle(color: Colors.black, fontSize: 40.w);
+      TextStyle(color: Colors.black, fontSize: 50.w);
 }
