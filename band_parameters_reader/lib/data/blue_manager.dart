@@ -36,9 +36,11 @@ class BlueManager {
     }
     final state = await device.state.first;
     print(state);
-    if (state.index == 2)
+    if (state.index == 2) {
       Toast.show("Your device is now connected", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      Navigator.pushNamed(context, '/connectedDevice');
+    }
 
     return state.index;
   }

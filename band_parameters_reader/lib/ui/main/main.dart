@@ -2,6 +2,7 @@ import 'package:band_parameters_reader/repositories/available_devices/available_
 import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
 import 'package:band_parameters_reader/utils/constants.dart';
+import 'package:band_parameters_reader/widgets/information_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -43,17 +44,6 @@ class _BandParametersReaderHomePageState
     );
   }
 
-  Widget _informationTextWrapper(String text) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      margin: EdgeInsets.only(top: 60.h),
-      child: Text(
-        text,
-        style: informationTextStyle,
-      ),
-    );
-  }
-
   Widget get _welcomeText => Container(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -64,7 +54,7 @@ class _BandParametersReaderHomePageState
       );
 
   Widget get _listOfDevicesText =>
-      _informationTextWrapper('List of compatible devices:');
+      InformationText(text: 'List of compatible devices:');
 
   Widget get _compatibleDevicesListView => Container(
         height: 70.h * Constants.COMPATIBLE_DEVICES.length,
@@ -81,8 +71,8 @@ class _BandParametersReaderHomePageState
                 )),
       );
 
-  Widget get _availableDevicesText => _informationTextWrapper(
-        'Choose your device from available:',
+  Widget get _availableDevicesText => InformationText(
+        text: 'Choose your device from available:',
       );
 
   Widget get _availableDevicesListView => Expanded(
