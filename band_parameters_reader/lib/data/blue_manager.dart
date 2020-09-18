@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:toast/toast.dart';
 
 class BlueManager {
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -26,11 +27,20 @@ class BlueManager {
   }
 
   // CONNECT TO DEVICE
-  Future<BluetoothDevice> connectToDevice(BluetoothDevice device) async {
-    await device.connect();
+  Future<int> connectToDevice(
+      BluetoothDevice device, BuildContext context) async {
+    try {
+      await device.connect();
+    } catch (e) {
+      print(e);
+    }
     final state = await device.state.first;
     print(state);
-    return device;
+    if (state.index == 2)
+      Toast.show("Your device is now connected", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+
+    return state.index;
   }
 
   // DISCOVER DEVICE SERVICES

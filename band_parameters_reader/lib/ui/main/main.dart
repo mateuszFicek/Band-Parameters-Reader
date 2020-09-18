@@ -1,4 +1,5 @@
 import 'package:band_parameters_reader/repositories/available_devices/available_devices_cubit.dart';
+import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
 import 'package:band_parameters_reader/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -94,46 +95,52 @@ class _BandParametersReaderHomePageState
       );
 
   Widget _availableDeviceContainer(BluetoothDevice device) {
-    return GestureDetector(
-      child: StreamBuilder<BluetoothDeviceState>(
-          stream: device.state.asBroadcastStream(),
-          initialData: BluetoothDeviceState.disconnected,
-          builder: (c, snapshot) => snapshot.data.index == 2
-              ? _connectedDeviceContainer(device, snapshot.data.index)
-              : _disconnectedDeviceContainer(device, snapshot.data.index)),
+    return StreamBuilder<BluetoothDeviceState>(
+      stream: device.state.asBroadcastStream(),
+      initialData: BluetoothDeviceState.disconnected,
+      builder: (c, snapshot) => snapshot.data.index == 2
+          ? _connectedDeviceContainer(device, snapshot.data.index)
+          : _disconnectedDeviceContainer(device, snapshot.data.index),
     );
   }
 
   Widget _connectedDeviceContainer(BluetoothDevice device, int stateIndex) {
-    return Container(
-      height: 170.h,
-      padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
-      decoration: BoxDecoration(
-          color: UIColors.LIGHT_FONT_COLOR,
-          borderRadius: BorderRadius.circular(40.w)),
-      alignment: Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            device.name == '' ? "Unknown name" : device.name,
-            style: TextStyle(fontSize: 40.w, color: Colors.black),
-            textAlign: TextAlign.left,
-          ),
-          Text(
-            _getConnectionState(stateIndex),
-            textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 30.w, color: Colors.black45),
-          ),
-          Text(
-            device.id.toString(),
-            style: TextStyle(fontSize: 30.w, color: Colors.black45),
-            textAlign: TextAlign.left,
-          ),
-        ],
+    return GestureDetector(
+      onTap: () => connectToDevice(device, context),
+      child: Container(
+        height: 170.h,
+        padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
+        decoration: BoxDecoration(
+            color: UIColors.LIGHT_FONT_COLOR,
+            borderRadius: BorderRadius.circular(40.w)),
+        alignment: Alignment.centerLeft,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              device.name == '' ? "Unknown name" : device.name,
+              style: TextStyle(fontSize: 40.w, color: Colors.black),
+              textAlign: TextAlign.left,
+            ),
+            Text(
+              _getConnectionState(stateIndex),
+              textAlign: TextAlign.left,
+              style: TextStyle(fontSize: 30.w, color: Colors.black45),
+            ),
+            Text(
+              device.id.toString(),
+              style: TextStyle(fontSize: 30.w, color: Colors.black45),
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void connectToDevice(BluetoothDevice device, BuildContext context) {
+    context.bloc<ConnectedDeviceCubit>().setConnectedDevice(device, context);
   }
 
   Widget _disconnectedDeviceContainer(BluetoothDevice device, int stateIndex) {
