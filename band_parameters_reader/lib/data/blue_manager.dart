@@ -1,6 +1,8 @@
+import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:toast/toast.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BlueManager {
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -46,12 +48,10 @@ class BlueManager {
   }
 
   // DISCOVER DEVICE SERVICES
-  Future discoverDeviceServices(BluetoothDevice device) async {
+  Future<List<BluetoothService>> discoverDeviceServices(
+      BluetoothDevice device) async {
     final serv = await device.discoverServices();
-    services = serv;
-    serv.forEach((element) {
-      print(element.uuid);
-    });
+    return serv;
   }
 
   // GET DESCRIPTOR
@@ -101,7 +101,15 @@ class BlueManager {
     print(service.uuid);
   }
 
-  heartRateListener() {}
+  setListener(
+      BluetoothCharacteristic characteristic, BuildContext context) async {
+    await characteristic.setNotifyValue(true);
+    characteristic.value.listen((vue) {
+      print("New value for ${characteristic.uuid} is $vue");
+      if (vue.length > 0)
+        context.bloc<ConnectedDeviceCubit>().updateCurrentHeartRate(vue[1]);
+    });
+  }
 
   // CLOSE DEVICE CONNECTION
   closeConnection() async {
@@ -109,5 +117,24 @@ class BlueManager {
     conn.forEach((element) {
       element.disconnect();
     });
+  }
+
+  BluetoothService findService(
+      List<BluetoothService> services, String serviceUUID) {
+    final service = services
+        .firstWhere((element) => element.uuid.toString().contains(serviceUUID));
+    return service;
+  }
+
+  Future<int> getDeviceBatteryLevel(
+      BluetoothCharacteristic characteristic, BuildContext context) async {
+    print(characteristic);
+    final canRead = await characteristic.properties.read;
+    if (canRead) {
+      final batteryValues = await characteristic.read();
+      print("BATTERY VALUE ARE $batteryValues");
+      return batteryValues[0];
+    }
+    return 0;
   }
 }

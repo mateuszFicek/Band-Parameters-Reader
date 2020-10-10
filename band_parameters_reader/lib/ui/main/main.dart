@@ -18,7 +18,12 @@ class BandParametersReaderHomePage extends StatefulWidget {
 
 class _BandParametersReaderHomePageState
     extends State<BandParametersReaderHomePage> {
-  String dropdownValue = 'Bitalino';
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero,
+        () => context.bloc<AvailableDevicesCubit>().getAvailableDevices());
+  }
 
   @override
   Widget build(BuildContext context) {
