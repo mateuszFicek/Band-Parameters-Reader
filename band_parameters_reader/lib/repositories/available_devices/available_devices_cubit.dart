@@ -10,9 +10,15 @@ class AvailableDevicesCubit extends Cubit<AvailableDevicesState> {
 
   AvailableDevicesCubit(this.context) : super(AvailableDevicesInitial());
 
+  void toggleIsScanning() async {
+    emit(state.copyWith(isScanning: true));
+  }
+
   void getAvailableDevices() async {
     final availableDevices = await BlueManager().scanForAvailableDevices();
 
-    emit(state.copyWith(availableDevices: availableDevices.toSet().toList()));
+    emit(state.copyWith(
+        availableDevices: availableDevices.toSet().toList(),
+        isScanning: false));
   }
 }

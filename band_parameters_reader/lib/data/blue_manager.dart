@@ -1,4 +1,6 @@
+import 'package:band_parameters_reader/models/heart_beat_measure.dart';
 import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
+import 'package:band_parameters_reader/repositories/measurment/measurment_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:toast/toast.dart';
@@ -54,11 +56,6 @@ class BlueManager {
     return serv;
   }
 
-  // GET DESCRIPTOR
-  Future getDesc() async {
-    BluetoothDescriptor descriptor;
-  }
-
   // PRINT CHARACTERISTICS
   Future printChar(BluetoothService service) async {
     service.characteristics.forEach((element) async {
@@ -108,14 +105,20 @@ class BlueManager {
       print("New value for ${characteristic.uuid} is $vue");
       if (vue.length > 0)
         context.bloc<ConnectedDeviceCubit>().updateCurrentHeartRate(vue[1]);
+      context.bloc<MeasurmentCubit>().addHeartbeatMeasurment(
+          HeartBeatMeasure(date: DateTime.now(), heartBeat: vue[1]));
     });
+  }
+
+  disableListener(BluetoothCharacteristic characteristic) async {
+    await characteristic.setNotifyValue(false);
   }
 
   // CLOSE DEVICE CONNECTION
   closeConnection() async {
     final conn = await flutterBlue.connectedDevices;
-    conn.forEach((element) {
-      element.disconnect();
+    conn.forEach((element) async {
+      await element.disconnect();
     });
   }
 

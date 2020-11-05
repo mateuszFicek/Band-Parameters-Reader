@@ -17,14 +17,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        textTheme: GoogleFonts.montserratTextTheme(
+        textTheme: GoogleFonts.nunitoSansTextTheme(
           Theme.of(context).textTheme,
         ),
       ),
       title: 'Band Parameters Reader',
       routes: {
         '/': (context) => BandParametersReaderHomePage(),
-        '/connectedDevice': (context) => ConnectedDevicePage(),
+        '/connectedDevice': (context) => new ConnectedDevicePage(),
       },
       initialRoute: '/',
     );

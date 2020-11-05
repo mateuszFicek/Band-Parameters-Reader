@@ -36,8 +36,14 @@ class ConnectedDeviceCubit extends Cubit<ConnectedDeviceState> {
     BlueManager().setListener(characteristic, context);
   }
 
-  void disconnectFromDevice() {
+  void disableListenerForCharacteristics(
+      BluetoothCharacteristic characteristic) {
+    BlueManager().disableListener(characteristic);
+  }
+
+  disconnectFromDevice() {
     BlueManager().closeConnection();
+    emit(ConnectedDeviceInitial());
   }
 
   void setCurrentBattery(int batteryLevel) {

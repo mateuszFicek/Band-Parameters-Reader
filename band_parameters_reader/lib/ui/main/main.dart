@@ -1,3 +1,4 @@
+import 'package:band_parameters_reader/data/blue_manager.dart';
 import 'package:band_parameters_reader/repositories/available_devices/available_devices_cubit.dart';
 import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
@@ -21,8 +22,10 @@ class _BandParametersReaderHomePageState
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero,
-        () => context.bloc<AvailableDevicesCubit>().getAvailableDevices());
+    Future.delayed(Duration.zero, () {
+      context.bloc<AvailableDevicesCubit>().toggleIsScanning();
+      context.bloc<AvailableDevicesCubit>().getAvailableDevices();
+    });
   }
 
   @override
@@ -53,7 +56,7 @@ class _BandParametersReaderHomePageState
         alignment: Alignment.centerLeft,
         child: Text(
           "Welcome to \nParameters Reader",
-          style: TextStyle(color: Colors.white, fontSize: 80.w),
+          style: TextStyle(color: Colors.black, fontSize: 80.w),
           textAlign: TextAlign.left,
         ),
       );
@@ -71,7 +74,7 @@ class _BandParametersReaderHomePageState
                   alignment: Alignment.centerLeft,
                   child: Text(
                     Constants.COMPATIBLE_DEVICES[index],
-                    style: TextStyle(color: Colors.white, fontSize: 30.w),
+                    style: TextStyle(color: Colors.black, fontSize: 30.w),
                   ),
                 )),
       );
@@ -103,10 +106,11 @@ class _BandParametersReaderHomePageState
     return GestureDetector(
       onTap: () => connectToDevice(device, context),
       child: Container(
-        height: 170.h,
+        height: 200.h,
+        margin: EdgeInsets.symmetric(vertical: 10.h),
         padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
         decoration: BoxDecoration(
-            color: UIColors.LIGHT_FONT_COLOR,
+            color: UIColors.GRADIENT_DARK_COLOR,
             borderRadius: BorderRadius.circular(40.w)),
         alignment: Alignment.centerLeft,
         child: Column(
@@ -115,7 +119,7 @@ class _BandParametersReaderHomePageState
           children: [
             Text(
               device.name == '' ? "Unknown name" : device.name,
-              style: TextStyle(fontSize: 40.w, color: Colors.black),
+              style: TextStyle(fontSize: 40.w, color: Colors.white),
               textAlign: TextAlign.left,
             ),
             Text(
@@ -140,29 +144,49 @@ class _BandParametersReaderHomePageState
 
   Widget _disconnectedDeviceContainer(BluetoothDevice device, int stateIndex) {
     return Container(
-      height: 170.h,
-      padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
-      alignment: Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            device.name == '' ? "Unknown name" : device.name,
-            style: informationTextStyle.copyWith(fontSize: 40.w),
-            textAlign: TextAlign.left,
+        height: 200.h,
+        margin: EdgeInsets.symmetric(vertical: 10.h),
+        padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: UIColors.GRADIENT_DARK_COLOR,
+            ),
+            borderRadius: BorderRadius.circular(40.w)),
+        alignment: Alignment.centerLeft,
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                device.name == '' ? "Unknown name" : device.name,
+                style: informationTextStyle.copyWith(fontSize: 40.w),
+                textAlign: TextAlign.left,
+              ),
+              Text(_getConnectionState(stateIndex),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black, fontSize: 30.w)),
+              Text(
+                device.id.toString(),
+                style: TextStyle(color: Colors.black, fontSize: 30.w),
+                textAlign: TextAlign.left,
+              ),
+            ],
           ),
-          Text(_getConnectionState(stateIndex),
-              textAlign: TextAlign.left,
-              style: TextStyle(color: Colors.white, fontSize: 30.w)),
-          Text(
-            device.id.toString(),
-            style: TextStyle(color: Colors.white, fontSize: 30.w),
-            textAlign: TextAlign.left,
-          ),
-        ],
-      ),
-    );
+          FlatButton(
+            color: Colors.black12,
+            textColor: Colors.black,
+            child: Text("Connect"),
+            onPressed: () {
+              try {
+                device.connect();
+              } catch (e) {
+                print(e);
+              }
+            },
+          )
+        ]));
   }
 
   String _getConnectionState(int index) {
@@ -186,31 +210,41 @@ class _BandParametersReaderHomePageState
   TextStyle get informationTextStyle =>
       TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
 
-  Widget get _reloadButton => _buttonWrapper(
-      () => context.bloc<AvailableDevicesCubit>().getAvailableDevices(),
-      'Reload Devices');
+  Widget get _reloadButton => _buttonWrapper(() {
+        context.bloc<AvailableDevicesCubit>().toggleIsScanning();
+        context.bloc<AvailableDevicesCubit>().getAvailableDevices();
+      }, 'Reload Devices');
 
   Widget _buttonWrapper(Function onTap, String buttonText) {
-    return Container(
-      margin: EdgeInsets.only(top: 80.h),
-      alignment: Alignment.center,
-      child: Material(
-        color: UIColors.LIGHT_FONT_COLOR,
-        borderRadius: BorderRadius.circular(40.w),
-        child: InkWell(
-          splashColor: UIColors.BACKGROUND_COLOR.withOpacity(0.2),
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(40.w),
-          child: Container(
-            width: 500.w,
-            height: 140.h,
-            alignment: Alignment.center,
-            decoration:
-                BoxDecoration(borderRadius: BorderRadius.circular(40.w)),
-            child: Text(
-              buttonText,
-              textAlign: TextAlign.center,
-              style: _buttonTextStyle,
+    return BlocBuilder<AvailableDevicesCubit, AvailableDevicesState>(
+      builder: (context, state) => AbsorbPointer(
+        absorbing: state.isScanning,
+        child: Container(
+          margin: EdgeInsets.only(top: 80.h),
+          alignment: Alignment.center,
+          child: Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40.w),
+            child: InkWell(
+              splashColor: UIColors.BACKGROUND_COLOR.withOpacity(0.2),
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(40.w),
+              child: Container(
+                width: 500.w,
+                height: 140.h,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40.w),
+                    border: Border.all(
+                      color: UIColors.LIGHT_FONT_COLOR,
+                      width: 1.0,
+                    )),
+                child: Text(
+                  buttonText,
+                  textAlign: TextAlign.center,
+                  style: _buttonTextStyle,
+                ),
+              ),
             ),
           ),
         ),
