@@ -1,3 +1,4 @@
+import 'package:band_parameters_reader/ui/connected_device/connected_device.dart';
 import 'package:band_parameters_reader/ui/main/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,13 +17,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        textTheme: GoogleFonts.montserratTextTheme(
+        textTheme: GoogleFonts.nunitoSansTextTheme(
           Theme.of(context).textTheme,
         ),
       ),
       title: 'Band Parameters Reader',
       routes: {
         '/': (context) => BandParametersReaderHomePage(),
+        '/connectedDevice': (context) => new ConnectedDevicePage(),
       },
       initialRoute: '/',
     );

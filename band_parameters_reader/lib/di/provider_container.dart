@@ -1,5 +1,6 @@
 import 'package:band_parameters_reader/repositories/available_devices/available_devices_cubit.dart';
 import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
+import 'package:band_parameters_reader/repositories/measurment/measurment_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,9 @@ class ProviderContainerState extends State<ProviderContainer> {
             create: (context) => ConnectedDeviceCubit(context)),
         BlocProvider<AvailableDevicesCubit>(
           create: (context) => AvailableDevicesCubit(context),
+        ),
+        BlocProvider<MeasurmentCubit>(
+          create: (context) => MeasurmentCubit(context),
         ),
       ],
       child: widget.child,
