@@ -1,3 +1,4 @@
+import 'package:band_parameters_reader/ui/bitalino/bitalino_screen.dart';
 import 'package:band_parameters_reader/ui/connected_device/connected_device.dart';
 import 'package:band_parameters_reader/ui/main/main.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => BandParametersReaderHomePage(),
         '/connectedDevice': (context) => new ConnectedDevicePage(),
+        '/bluetoothDevice' : (context) => new BitalinoScreen(),
       },
       initialRoute: '/',
     );
