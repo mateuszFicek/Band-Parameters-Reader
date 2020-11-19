@@ -1,6 +1,8 @@
 import 'package:band_parameters_reader/data/blue_manager.dart';
 import 'package:band_parameters_reader/repositories/available_devices/available_devices_cubit.dart';
+import 'package:band_parameters_reader/repositories/bluetooth_devices/bluetooth_devices_cubit.dart';
 import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
+import 'package:band_parameters_reader/ui/bitalino/bitalino_screen.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
 import 'package:band_parameters_reader/utils/constants.dart';
 import 'package:band_parameters_reader/widgets/information_text.dart';
@@ -19,6 +21,7 @@ class BandParametersReaderHomePage extends StatefulWidget {
 
 class _BandParametersReaderHomePageState
     extends State<BandParametersReaderHomePage> {
+  bool isSearchingForBLE = true;
   @override
   void initState() {
     super.initState();
@@ -44,8 +47,21 @@ class _BandParametersReaderHomePageState
             _listOfDevicesText,
             _compatibleDevicesListView,
             _availableDevicesText,
-            _availableDevicesListView,
-            _reloadButton,
+            isSearchingForBLE
+                ? _availableDevicesListView
+                : _availableBluetoothListView,
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [_bleButton, _classicButton]),
+            FlatButton(
+              child: Text("Bitalino"),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BitalinoScreen()),
+                );
+              },
+            )
           ],
         ),
       ),
@@ -90,6 +106,21 @@ class _BandParametersReaderHomePageState
                   state.availableDevices.elementAt(index)),
               itemCount: state.availableDevices.length),
         ),
+      );
+
+  Widget get _availableBluetoothListView => Expanded(
+        child: BlocBuilder<BluetoothDevicesCubit, BluetoothDevicesState>(
+            builder: (context, state) {
+          print(state.availableDevices.length);
+          return ListView.builder(
+              itemBuilder: (context, index) => Container(
+                    width: 200,
+                    height: 100,
+                    child: Text(
+                        "${state.availableDevices[index].address} --- ${state.availableDevices[index].name}"),
+                  ),
+              itemCount: state.availableDevices.length);
+        }),
       );
 
   Widget _availableDeviceContainer(BluetoothDevice device) {
@@ -210,10 +241,20 @@ class _BandParametersReaderHomePageState
   TextStyle get informationTextStyle =>
       TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
 
-  Widget get _reloadButton => _buttonWrapper(() {
+  Widget get _bleButton => _buttonWrapper(() {
         context.bloc<AvailableDevicesCubit>().toggleIsScanning();
         context.bloc<AvailableDevicesCubit>().getAvailableDevices();
-      }, 'Reload Devices');
+        setState(() {
+          isSearchingForBLE = true;
+        });
+      }, 'Load BLE Devices');
+
+  Widget get _classicButton => _buttonWrapper(() {
+        context.bloc<BluetoothDevicesCubit>().getAvailableDevices(context);
+        setState(() {
+          isSearchingForBLE = false;
+        });
+      }, "Load classic");
 
   Widget _buttonWrapper(Function onTap, String buttonText) {
     return BlocBuilder<AvailableDevicesCubit, AvailableDevicesState>(
@@ -230,7 +271,7 @@ class _BandParametersReaderHomePageState
               onTap: onTap,
               borderRadius: BorderRadius.circular(40.w),
               child: Container(
-                width: 500.w,
+                width: 350.w,
                 height: 140.h,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
@@ -253,5 +294,5 @@ class _BandParametersReaderHomePageState
   }
 
   TextStyle get _buttonTextStyle =>
-      TextStyle(color: Colors.black, fontSize: 50.w);
+      TextStyle(color: Colors.black, fontSize: 40.w);
 }

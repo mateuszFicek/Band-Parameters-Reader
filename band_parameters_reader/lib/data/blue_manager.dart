@@ -124,9 +124,14 @@ class BlueManager {
 
   BluetoothService findService(
       List<BluetoothService> services, String serviceUUID) {
-    final service = services
-        .firstWhere((element) => element.uuid.toString().contains(serviceUUID));
-    return service;
+    try {
+      final service = services.firstWhere(
+          (element) => element.uuid.toString().contains(serviceUUID),
+          orElse: null);
+      return service;
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<int> getDeviceBatteryLevel(

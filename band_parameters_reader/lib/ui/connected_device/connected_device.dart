@@ -48,23 +48,35 @@ class _ConnectedDevicePageState extends State<ConnectedDevicePage> {
   Future _updateBattery(List<BluetoothService> services) async {
     final batteryService =
         BlueManager().findService(services, BleGATTServices.BATTERY_SERVICE);
-    final currentBattery = await BlueManager().getDeviceBatteryLevel(
-        batteryService.characteristics.firstWhere((element) => element.uuid
-            .toString()
-            .contains(BleGATTCharacteristics.BATTERY_LEVEL)),
-        context);
-    connectedDeviceCubit.setCurrentBattery(currentBattery);
+    try {
+      final currentBattery = await BlueManager().getDeviceBatteryLevel(
+          batteryService.characteristics.firstWhere(
+              (element) => element.uuid
+                  .toString()
+                  .contains(BleGATTCharacteristics.BATTERY_LEVEL),
+              orElse: null),
+          context);
+      connectedDeviceCubit.setCurrentBattery(currentBattery);
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _setHeartRateListener(List<BluetoothService> services) {
-    final heartRateService =
-        BlueManager().findService(services, BleGATTServices.HEART_RATE_SERVICE);
-    heartRateCharacteristic = heartRateService.characteristics.firstWhere(
-        (element) => element.uuid
-            .toString()
-            .contains(BleGATTCharacteristics.HEART_RATE_MEASURMENT));
-    connectedDeviceCubit.setListenerForCharacteristics(
-        heartRateCharacteristic, context);
+    try {
+      final heartRateService = BlueManager()
+          .findService(services, BleGATTServices.HEART_RATE_SERVICE);
+
+      heartRateCharacteristic = heartRateService.characteristics.firstWhere(
+          (element) => element.uuid
+              .toString()
+              .contains(BleGATTCharacteristics.HEART_RATE_MEASURMENT),
+          orElse: null);
+      connectedDeviceCubit.setListenerForCharacteristics(
+          heartRateCharacteristic, context);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -137,15 +149,21 @@ class _ConnectedDevicePageState extends State<ConnectedDevicePage> {
   Widget _batteryBox(ConnectedDeviceState state) {
     return GestureDetector(
       onTap: () async {
-        final services = connectedDeviceCubit.state.services;
-        final batteryService = BlueManager()
-            .findService(services, BleGATTServices.BATTERY_SERVICE);
-        final currentBattery = await BlueManager().getDeviceBatteryLevel(
-            batteryService.characteristics.firstWhere((element) => element.uuid
-                .toString()
-                .contains(BleGATTCharacteristics.BATTERY_LEVEL)),
-            context);
-        connectedDeviceCubit.setCurrentBattery(currentBattery);
+        try {
+          final services = connectedDeviceCubit.state.services;
+          final batteryService = BlueManager()
+              .findService(services, BleGATTServices.BATTERY_SERVICE);
+          final currentBattery = await BlueManager().getDeviceBatteryLevel(
+              batteryService.characteristics.firstWhere(
+                  (element) => element.uuid
+                      .toString()
+                      .contains(BleGATTCharacteristics.BATTERY_LEVEL),
+                  orElse: null),
+              context);
+          connectedDeviceCubit.setCurrentBattery(currentBattery);
+        } catch (e) {
+          print(e);
+        }
       },
       child: Container(
         width: double.infinity,
