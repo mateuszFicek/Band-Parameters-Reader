@@ -23,6 +23,8 @@ dependencies:
   syncfusion_flutter_charts: ^18.3.50
   bitalino: ^1.1.1+1
   flutter_bluetooth_serial: ^0.2.2
+  csv: ^4.1.0
+  # simple_permissions: ^0.1.9
 
 dev_dependencies:
   flutter_test:

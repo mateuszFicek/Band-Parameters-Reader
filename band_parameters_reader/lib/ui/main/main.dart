@@ -10,10 +10,12 @@ class BandParametersReaderHomePage extends StatefulWidget {
   const BandParametersReaderHomePage({Key key}) : super(key: key);
 
   @override
-  _BandParametersReaderHomePageState createState() => _BandParametersReaderHomePageState();
+  _BandParametersReaderHomePageState createState() =>
+      _BandParametersReaderHomePageState();
 }
 
-class _BandParametersReaderHomePageState extends State<BandParametersReaderHomePage>
+class _BandParametersReaderHomePageState
+    extends State<BandParametersReaderHomePage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
 
@@ -43,7 +45,9 @@ class _BandParametersReaderHomePageState extends State<BandParametersReaderHomeP
         ),
         body: Padding(
             padding: EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 32),
-            child: _tabController.index == 0 ? BluetoothLEDevices() : BluetoothDevices()));
+            child: _tabController.index == 0
+                ? BluetoothLEDevices()
+                : BluetoothDevices()));
   }
 
   Widget _bottomAppBar() {
@@ -65,8 +69,10 @@ class _BandParametersReaderHomePageState extends State<BandParametersReaderHomeP
   Widget _topBarText(String title, int index) {
     return Container(
       alignment: Alignment.center,
-      child:
-          Text(title, style: _tabController.index == index ? _activeTextStyle : _inactiveTextStyle),
+      child: Text(title,
+          style: _tabController.index == index
+              ? _activeTextStyle
+              : _inactiveTextStyle),
       height: 40,
     );
   }
@@ -96,7 +102,7 @@ class _BandParametersReaderHomePageState extends State<BandParametersReaderHomeP
   Widget _welcomeText() => Container(
         alignment: Alignment.centerLeft,
         child: Text(
-          "Welcome to \nParameters Reader",
+          "Wybierz typ połączenia",
           style: TextStyle(color: Colors.black, fontSize: 80.w),
           textAlign: TextAlign.left,
         ),

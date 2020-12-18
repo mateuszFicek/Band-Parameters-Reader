@@ -46,23 +46,22 @@ class _BluetoothLEDevicesState extends State<BluetoothLEDevices>
   }
 
   Widget get _infoText => Text(
-        "Application was developed for devices with BLE connectivity. Notice that some devices may not work.",
+        "Aplikacja jest kompatybilna z większością urządzeń z technologią Bluetooth LE.",
         style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
       );
 
   Widget get _availableDevicesText => InformationText(
-        text: 'Choose your device from available:',
+        text: 'Wybierz urządzenie z dostępnych:',
       );
 
   Widget get _availableDevicesListView => Expanded(
         child: BlocBuilder<AvailableDevicesCubit, AvailableDevicesState>(
           builder: (context, state) => ListView.builder(
-              itemBuilder: (context, index) =>
-                  _availableDeviceContainer(state.availableDevices.elementAt(index)),
+              itemBuilder: (context, index) => _availableDeviceContainer(
+                  state.availableDevices.elementAt(index)),
               itemCount: state.availableDevices.length),
         ),
       );
-
 
   Widget _availableDeviceContainer(BluetoothDevice device) {
     return StreamBuilder<BluetoothDeviceState>(
@@ -82,14 +81,15 @@ class _BluetoothLEDevicesState extends State<BluetoothLEDevices>
         margin: EdgeInsets.symmetric(vertical: 10.h),
         padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
         decoration: BoxDecoration(
-            color: UIColors.GRADIENT_DARK_COLOR, borderRadius: BorderRadius.circular(40.w)),
+            color: UIColors.GRADIENT_DARK_COLOR,
+            borderRadius: BorderRadius.circular(40.w)),
         alignment: Alignment.centerLeft,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              device.name == '' ? "Unknown name" : device.name,
+              device.name == '' ? "Brak nazwy" : device.name,
               style: TextStyle(fontSize: 40.w, color: Colors.white),
               textAlign: TextAlign.left,
             ),
@@ -124,18 +124,20 @@ class _BluetoothLEDevicesState extends State<BluetoothLEDevices>
             ),
             borderRadius: BorderRadius.circular(40.w)),
         alignment: Alignment.centerLeft,
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                device.name == '' ? "Unknown name" : device.name,
+                device.name == '' ? "Brak nazwy" : device.name,
                 style: informationTextStyle.copyWith(fontSize: 40.w),
                 textAlign: TextAlign.left,
               ),
               Text(_getConnectionState(stateIndex),
-                  textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontSize: 30.w)),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black, fontSize: 30.w)),
               Text(
                 device.id.toString(),
                 style: TextStyle(color: Colors.black, fontSize: 30.w),
@@ -146,7 +148,7 @@ class _BluetoothLEDevicesState extends State<BluetoothLEDevices>
           FlatButton(
             color: Colors.black12,
             textColor: Colors.black,
-            child: Text("Connect"),
+            child: Text("Połącz"),
             onPressed: () {
               try {
                 device.connect();
@@ -161,22 +163,23 @@ class _BluetoothLEDevicesState extends State<BluetoothLEDevices>
   String _getConnectionState(int index) {
     switch (index) {
       case 0:
-        return 'Disconneted';
+        return 'Rozłączone';
         break;
       case 1:
-        return 'Connecting';
+        return 'Łączenie';
         break;
       case 2:
-        return 'Connected';
+        return 'Połączone';
         break;
       case 3:
-        return 'Disconnecting';
+        return 'Rozłączanie';
         break;
       default:
     }
   }
 
-  TextStyle get informationTextStyle => TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
+  TextStyle get informationTextStyle =>
+      TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
 
   Widget get _bleButton => CustomButton(
         onPressed: () {
@@ -186,7 +189,7 @@ class _BluetoothLEDevicesState extends State<BluetoothLEDevices>
             isSearchingForBLE = true;
           });
         },
-        text: "Reload devices",
+        text: "Odśwież",
       );
 
   @override

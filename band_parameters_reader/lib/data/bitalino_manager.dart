@@ -13,9 +13,9 @@ class BitalinoManager {
 
   BitalinoManager({this.context});
 
-  void initialize() async {
+  void initialize(String address) async {
     bitalinoController = BITalinoController(
-      "20:16:12:21:39:01",
+      address,
       CommunicationType.BTH,
     );
 
@@ -24,8 +24,15 @@ class BitalinoManager {
     } on PlatformException catch (Exception) {
       print("Initialization failed: ${Exception.message}");
     }
+  }
 
-    connectToDevice();
+  Future<BITalinoState> getState() async {
+    final state = await bitalinoController.state();
+    return state;
+  }
+
+  bool connected() {
+    return bitalinoController.connected;
   }
 
   Future<void> connectToDevice() async {
@@ -44,12 +51,22 @@ class BitalinoManager {
     try {
       bool started = await bitalinoController.start([
         0,
-      ], Frequency.HZ100, numberOfSamples: 10, onDataAvailable: (frame) {
-        Measure measure = Measure(date: DateTime.now(), measure: frame.analog[0].round());
-        context
-            .bloc<BitalinoCubit>()
-            .addMeasure(Measure(date: DateTime.now(), measure: frame.analog[0].round()));
+      ], Frequency.HZ10, numberOfSamples: 10, onDataAvailable: (frame) {
+        Measure measure = Measure(
+            date: DateTime.now(),
+            measure: frame.analog[0].round(),
+            id: context.bloc<BitalinoCubit>().state.measure.length);
+
+        context.bloc<BitalinoCubit>().addMeasure(measure);
       });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> stopAcquisition() async {
+    try {
+      await bitalinoController.stop();
     } catch (e) {
       print(e);
     }

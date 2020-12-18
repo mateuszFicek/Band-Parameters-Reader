@@ -3,14 +3,18 @@ part of 'bitalino_cubit.dart';
 @immutable
 class BitalinoState {
   final List<Measure> measure;
+  final bool isCollectingData;
 
-  BitalinoState({this.measure});
+  BitalinoState({this.measure, this.isCollectingData});
 
-  BitalinoState copyWith({BluetoothDevice device, List<Measure> measures}) {
-    return BitalinoState(measure: measures ?? this.measure);
+  BitalinoState copyWith(
+      {BluetoothDevice device, List<Measure> measures, bool isCollecting}) {
+    return BitalinoState(
+        measure: measures ?? this.measure,
+        isCollectingData: isCollecting ?? this.isCollectingData);
   }
 }
 
 class BitalinoInitial extends BitalinoState {
-  BitalinoInitial() : super(measure: []);
+  BitalinoInitial() : super(measure: [], isCollectingData: false);
 }

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:band_parameters_reader/data/bitalino_manager.dart';
 import 'package:band_parameters_reader/repositories/bluetooth_devices/bluetooth_devices_cubit.dart';
+import 'package:band_parameters_reader/ui/bitalino/bitalino_screen.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
 import 'package:band_parameters_reader/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,8 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
   }
 
   Widget get _availableBluetoothListView => Expanded(
-        child: BlocBuilder<BluetoothDevicesCubit, BluetoothDevicesState>(builder: (context, state) {
+        child: BlocBuilder<BluetoothDevicesCubit, BluetoothDevicesState>(
+            builder: (context, state) {
           return ListView.builder(
               itemBuilder: (context, index) =>
                   _availableDeviceContainer(state.availableDevices[index]),
@@ -45,7 +47,7 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
         onPressed: () {
           context.bloc<BluetoothDevicesCubit>().getAvailableDevices(context);
         },
-        text: "Reload devices",
+        text: "Odśwież",
       );
 
   Widget _availableDeviceContainer(BluetoothDevice device) {
@@ -62,14 +64,15 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
         margin: EdgeInsets.symmetric(vertical: 10.h),
         padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
         decoration: BoxDecoration(
-            color: UIColors.GRADIENT_DARK_COLOR, borderRadius: BorderRadius.circular(40.w)),
+            color: UIColors.GRADIENT_DARK_COLOR,
+            borderRadius: BorderRadius.circular(40.w)),
         alignment: Alignment.centerLeft,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              device.name == '' ? "Unknown name" : device.name,
+              device.name == '' ? "Brak nazwy" : device.name,
               style: TextStyle(fontSize: 40.w, color: Colors.white),
               textAlign: TextAlign.left,
             ),
@@ -95,13 +98,14 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
             ),
             borderRadius: BorderRadius.circular(40.w)),
         alignment: Alignment.centerLeft,
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                device.name == null ? "Unknown name" : device.name,
+                device.name == null ? "Brak nazwy" : device.name,
                 style: informationTextStyle.copyWith(fontSize: 40.w),
                 textAlign: TextAlign.left,
               ),
@@ -115,30 +119,14 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
           FlatButton(
             color: Colors.black12,
             textColor: Colors.black,
-            child: Text("Connect"),
+            child: Text("Połącz"),
             onPressed: () async {
               try {
-                // CHECK THIS CONNECTION AND HOW TO PAIR
-//                BluetoothConnection connection =
-//                    await BluetoothConnection.toAddress(device.address);
-//                BluetoothPairingRequest request = BluetoothPairingRequest(address: device.address);
-                print('Connected to the device');
-//                if (connection.isConnected) {
-                Navigator.pushNamed(context, '/bluetoothDevice');
-//                }
-//                BitalinoManager().initialize();
-//                BitalinoManager().connectToDevice();
-//                connection.input.listen((Uint8List data) {
-//                  print('Data incoming: $data}');
-//                  connection.output.add(data); // Sending data
-//
-//                  if (data.contains('!')) {
-//                    connection.finish(); // Closing connection
-//                    print('Disconnecting by local host');
-//                  }
-//                }).onDone(() {
-//                  print('Disconnected by remote request');
-//                });
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            BitalinoScreen(address: device.address)));
               } catch (exception) {
                 print('Cannot connect, exception occured');
               }
@@ -147,7 +135,8 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
         ]));
   }
 
-  TextStyle get informationTextStyle => TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
+  TextStyle get informationTextStyle =>
+      TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
 
   @override
   bool get wantKeepAlive => true;
