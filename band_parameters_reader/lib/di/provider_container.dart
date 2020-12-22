@@ -1,5 +1,5 @@
 import 'package:band_parameters_reader/repositories/available_devices/available_devices_cubit.dart';
-import 'package:band_parameters_reader/repositories/bitalino_cubit.dart';
+import 'package:band_parameters_reader/repositories/bitalino/bitalino_cubit.dart';
 import 'package:band_parameters_reader/repositories/bluetooth_devices/bluetooth_devices_cubit.dart';
 import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
 import 'package:band_parameters_reader/repositories/measurment/measurment_cubit.dart';

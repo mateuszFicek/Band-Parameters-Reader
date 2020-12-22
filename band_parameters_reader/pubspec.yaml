@@ -24,6 +24,9 @@ dependencies:
   bitalino: ^1.1.1+1
   flutter_bluetooth_serial: ^0.2.2
   csv: ^4.1.0
+  share: ^0.6.5+4
+  syncfusion_flutter_sliders: ^18.4.31-beta
+
   # simple_permissions: ^0.1.9
 
 dev_dependencies:

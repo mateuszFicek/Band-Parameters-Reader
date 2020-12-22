@@ -15,10 +15,12 @@ class BitalinoCubit extends Cubit<BitalinoState> {
     state.copyWith(device: device);
   }
 
-  addMeasure(Measure measure) {
-    List<Measure> measures = state.measure;
-    measures.add(measure);
-    print(measures.length);
+  addMeasure(Measure measure, int index) {
+    List<List<Measure>> measures = state.measure;
+    List<Measure> toAddMeasures = measures[index];
+    toAddMeasures.add(measure);
+    measures.removeAt(index);
+    measures.insert(index, toAddMeasures);
     emit(state.copyWith(measures: measures));
   }
 

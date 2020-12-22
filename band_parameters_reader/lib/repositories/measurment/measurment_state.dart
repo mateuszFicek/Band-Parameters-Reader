@@ -2,12 +2,12 @@ part of 'measurment_cubit.dart';
 
 @immutable
 class MeasurmentState {
-  final List<HeartBeatMeasure> heartbeatMeasure;
+  final List<Measure> heartbeatMeasure;
 
   MeasurmentState({this.heartbeatMeasure});
 
   MeasurmentState copyWith({
-    List<HeartBeatMeasure> heartbeatMeasure,
+    List<Measure> heartbeatMeasure,
   }) {
     return MeasurmentState(
         heartbeatMeasure: heartbeatMeasure ?? this.heartbeatMeasure);

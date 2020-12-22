@@ -1,8 +1,5 @@
-import 'dart:typed_data';
-
-import 'package:band_parameters_reader/data/bitalino_manager.dart';
 import 'package:band_parameters_reader/repositories/bluetooth_devices/bluetooth_devices_cubit.dart';
-import 'package:band_parameters_reader/ui/bitalino/bitalino_screen.dart';
+import 'package:band_parameters_reader/ui/bitalino/bitalino_measurment.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
 import 'package:band_parameters_reader/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +31,7 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
   }
 
   Widget get _availableBluetoothListView => Expanded(
-        child: BlocBuilder<BluetoothDevicesCubit, BluetoothDevicesState>(
-            builder: (context, state) {
+        child: BlocBuilder<BluetoothDevicesCubit, BluetoothDevicesState>(builder: (context, state) {
           return ListView.builder(
               itemBuilder: (context, index) =>
                   _availableDeviceContainer(state.availableDevices[index]),
@@ -64,8 +60,7 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
         margin: EdgeInsets.symmetric(vertical: 10.h),
         padding: EdgeInsets.symmetric(vertical: 20.w, horizontal: 40.w),
         decoration: BoxDecoration(
-            color: UIColors.GRADIENT_DARK_COLOR,
-            borderRadius: BorderRadius.circular(40.w)),
+            color: UIColors.GRADIENT_DARK_COLOR, borderRadius: BorderRadius.circular(40.w)),
         alignment: Alignment.centerLeft,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,8 +93,7 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
             ),
             borderRadius: BorderRadius.circular(40.w)),
         alignment: Alignment.centerLeft,
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -125,8 +119,7 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            BitalinoScreen(address: device.address)));
+                        builder: (context) => BitalinoMeasurment(address: device.address)));
               } catch (exception) {
                 print('Cannot connect, exception occured');
               }
@@ -135,8 +128,7 @@ class _BluetoothDevicesState extends State<BluetoothDevices>
         ]));
   }
 
-  TextStyle get informationTextStyle =>
-      TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
+  TextStyle get informationTextStyle => TextStyle(color: UIColors.LIGHT_FONT_COLOR, fontSize: 50.w);
 
   @override
   bool get wantKeepAlive => true;

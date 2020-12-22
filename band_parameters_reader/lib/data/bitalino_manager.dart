@@ -1,6 +1,5 @@
-import 'package:band_parameters_reader/models/heart_beat_measure.dart';
 import 'package:band_parameters_reader/models/measure.dart';
-import 'package:band_parameters_reader/repositories/bitalino_cubit.dart';
+import 'package:band_parameters_reader/repositories/bitalino/bitalino_cubit.dart';
 import 'package:bitalino/bitalino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BitalinoManager {
   BITalinoController bitalinoController;
   final BuildContext context;
-  List<HeartBeatMeasure> measures = [];
+  List<Measure> measures = [];
 
   BitalinoManager({this.context});
 
@@ -49,15 +48,16 @@ class BitalinoManager {
 
   Future<void> startAcquisition() async {
     try {
-      bool started = await bitalinoController.start([
-        0,
-      ], Frequency.HZ10, numberOfSamples: 10, onDataAvailable: (frame) {
-        Measure measure = Measure(
-            date: DateTime.now(),
-            measure: frame.analog[0].round(),
-            id: context.bloc<BitalinoCubit>().state.measure.length);
+      await bitalinoController.start([0, 1, 2, 3], Frequency.HZ10, numberOfSamples: 10,
+          onDataAvailable: (frame) {
+        for (int i = 0; i < 4; i++) {
+          Measure measure = Measure(
+              date: DateTime.now(),
+              measure: frame.analog[i].round(),
+              id: context.bloc<BitalinoCubit>().state.measure[0].length);
 
-        context.bloc<BitalinoCubit>().addMeasure(measure);
+          context.bloc<BitalinoCubit>().addMeasure(measure, i);
+        }
       });
     } catch (e) {
       print(e);

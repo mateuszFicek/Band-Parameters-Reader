@@ -1,35 +1,50 @@
 import 'dart:io';
 
 import 'package:band_parameters_reader/models/measure.dart';
-import 'package:band_parameters_reader/repositories/bitalino_cubit.dart';
+import 'package:band_parameters_reader/repositories/bitalino/bitalino_cubit.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
+import 'package:band_parameters_reader/widgets/chart.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class BitalinoMeasurmentSummary extends StatefulWidget {
   @override
-  _BitalinoMeasurmentSummaryState createState() =>
-      _BitalinoMeasurmentSummaryState();
+  _BitalinoMeasurmentSummaryState createState() => _BitalinoMeasurmentSummaryState();
 }
 
 class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
   String measurmentTitle;
   TextEditingController _textEditingController = TextEditingController();
   File file;
+  int dropdownValue = 1;
+  SfRangeValues _values;
+  bool first = false;
+  bool second = false;
+  bool third = false;
+  bool fourth = false;
 
   @override
   void initState() {
     super.initState();
     initTitle();
+    initRange();
   }
 
   void initTitle() {
-    String dateFormatted =
-        DateFormat('yyyy_MM_dd_kk_mm').format(DateTime.now());
+    String dateFormatted = DateFormat('yyyy_MM_dd_kk_mm').format(DateTime.now());
     measurmentTitle = "pomiar_$dateFormatted";
+  }
+
+  void initRange() {
+    Future.delayed(
+        Duration.zero,
+        () => _values =
+            SfRangeValues(0.0, context.bloc<BitalinoCubit>().state.measure[0].length.toDouble()));
   }
 
   @override
@@ -37,29 +52,158 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        toolbarHeight: 100,
+        toolbarHeight: 60,
         backgroundColor: UIColors.GRADIENT_DARK_COLOR,
         title: Text(
           measurmentTitle,
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w700, fontSize: 22),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 22),
         ),
       ),
       body: Stack(
         children: [
           Padding(
-            padding:
-                const EdgeInsets.only(bottom: 80, left: 15, right: 15, top: 24),
+            padding: const EdgeInsets.only(bottom: 130, left: 15, right: 15, top: 24),
             child: ListView(
               children: [
+                _chartBuilder(),
+                _slider(),
+                SizedBox(height: 16),
+                _inputPicker(),
+                SizedBox(height: 24),
+                Text("Generuj plik dla wejść: ",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                _checkboxes(),
                 _titleInput(),
                 SizedBox(height: 16),
               ],
             ),
           ),
-          _endButton(),
+          _buttons()
         ],
       ),
+    );
+  }
+
+  Widget _slider() {
+    return BlocBuilder<BitalinoCubit, BitalinoState>(builder: (_, state) {
+      return Container(
+          height: 50,
+          width: double.infinity,
+          child: SfRangeSlider(
+            activeColor: Color(0xFFDCD8FD),
+            min: 0.0,
+            max: state.measure[0].length.toDouble(),
+            values: _values,
+            interval: 20,
+            stepSize: 10,
+            showTicks: true,
+            showLabels: true,
+            enableTooltip: true,
+            minorTicksPerInterval: 1,
+            onChanged: (SfRangeValues values) {
+              setState(() {
+                _values = values;
+              });
+            },
+          ));
+    });
+  }
+
+  Widget _chartBuilder() {
+    List<Measure> measures;
+    return BlocBuilder<BitalinoCubit, BitalinoState>(builder: (_, state) {
+      measures = List<Measure>.from(state.measure[dropdownValue - 1]
+          .getRange((_values.start as double).round(), (_values.end as double).round()));
+
+      return Container(
+          height: 450,
+          width: double.infinity,
+          child: Chart(
+            data: measures,
+            canZoom: true,
+          ));
+    });
+  }
+
+  Widget _inputPicker() {
+    return DropdownButton<int>(
+      value: dropdownValue,
+      icon: Icon(Icons.arrow_drop_down),
+      iconSize: 24,
+      isExpanded: true,
+      elevation: 16,
+      style: TextStyle(color: Colors.black, fontSize: 16),
+      underline: Container(
+        height: 1.5,
+        color: UIColors.GRADIENT_DARK_COLOR,
+      ),
+      onChanged: (int newValue) {
+        setState(() {
+          dropdownValue = newValue;
+        });
+      },
+      items: <int>[1, 2, 3, 4].map<DropdownMenuItem<int>>((int value) {
+        return DropdownMenuItem<int>(
+          value: value,
+          child: Text(
+            "Wejście A${value}",
+            textAlign: TextAlign.center,
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _checkboxes() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Checkbox(
+              activeColor: Color(0xFF6151F6),
+              value: first,
+              onChanged: (value) {
+                setState(() {
+                  first = value;
+                });
+              }),
+          Text("A1"),
+        ]),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Checkbox(
+              activeColor: Color(0xFF6151F6),
+              value: second,
+              onChanged: (value) {
+                setState(() {
+                  second = value;
+                });
+              }),
+          Text("A2"),
+        ]),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Checkbox(
+              activeColor: Color(0xFF6151F6),
+              value: third,
+              onChanged: (value) {
+                setState(() {
+                  third = value;
+                });
+              }),
+          Text("A3"),
+        ]),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Checkbox(
+              activeColor: Color(0xFF6151F6),
+              value: fourth,
+              onChanged: (value) {
+                setState(() {
+                  fourth = value;
+                });
+              }),
+          Text("A4"),
+        ]),
+      ],
     );
   }
 
@@ -80,37 +224,61 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
     );
   }
 
-  Widget _endButton() {
+  Widget _buttons() {
     return Align(
       alignment: Alignment.bottomCenter,
-      child: SizedBox(
-        width: double.infinity,
-        child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.0),
-                  side: BorderSide(color: UIColors.GRADIENT_DARK_COLOR)),
-              padding: const EdgeInsets.all(8),
-              color: UIColors.GRADIENT_DARK_COLOR,
-              onPressed: () {
-                getCsv();
-              },
-              child: Text(
-                'Wyjdź do ekranu głównego',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700),
-              ),
-            )),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [saveAndShareButton(), _endButton()],
       ),
     );
   }
 
+  Widget _endButton() {
+    return Padding(
+        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+        child: SizedBox(
+          width: double.infinity,
+          child: RaisedButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6.0),
+                side: BorderSide(color: UIColors.GRADIENT_DARK_COLOR)),
+            padding: const EdgeInsets.all(8),
+            color: Colors.white,
+            onPressed: () {
+              Navigator.popUntil(context, (route) => route.isFirst);
+            },
+            child: Text(
+              'Wyjdź do ekranu głównego',
+              style: TextStyle(
+                  color: UIColors.GRADIENT_DARK_COLOR, fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ));
+  }
+
+  Widget saveAndShareButton() {
+    return Padding(
+        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+        child: SizedBox(
+            width: double.infinity,
+            child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6.0),
+                    side: BorderSide(color: UIColors.GRADIENT_DARK_COLOR)),
+                padding: const EdgeInsets.all(8),
+                color: UIColors.GRADIENT_DARK_COLOR,
+                onPressed: () {
+                  getCsv();
+                },
+                child: Text('Zapisz plik i udostępnij',
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)))));
+  }
+
   getCsv() async {
     String filePath;
-    List<Measure> associateList = context.bloc<BitalinoCubit>().state.measure;
+    List<Measure> associateList = context.bloc<BitalinoCubit>().state.measure[0];
 
     List<List<dynamic>> rows = List<List<dynamic>>();
     List<dynamic> row = List();
@@ -130,9 +298,15 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
     String dir = (await getExternalStorageDirectory()).absolute.path + "/";
     filePath = "$dir";
     print(" FILE " + filePath);
-    File f = new File(filePath + "$measurmentTitle.csv");
+    String fullPath = filePath + "$measurmentTitle.csv";
+    File f = new File(fullPath);
 
     String csv = const ListToCsvConverter().convert(rows);
-    f.writeAsString(csv);
+    file = await f.writeAsString(csv);
+    if (file != null) await shareFile(fullPath);
+  }
+
+  shareFile(String filePath) async {
+    await Share.shareFiles([filePath], text: 'Wykonany pomiar');
   }
 }

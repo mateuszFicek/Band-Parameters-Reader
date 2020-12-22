@@ -1,4 +1,4 @@
-import 'package:band_parameters_reader/models/heart_beat_measure.dart';
+import 'package:band_parameters_reader/models/measure.dart';
 import 'package:band_parameters_reader/repositories/connected_device/connected_device_cubit.dart';
 import 'package:band_parameters_reader/repositories/measurment/measurment_cubit.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BlueManager {
   FlutterBlue flutterBlue = FlutterBlue.instance;
   List<BluetoothDevice> devices = [];
-
   List<BluetoothService> services = [];
   int value = 0;
 
@@ -31,8 +30,7 @@ class BlueManager {
   }
 
   // CONNECT TO DEVICE
-  Future<int> connectToDevice(
-      BluetoothDevice device, BuildContext context) async {
+  Future<int> connectToDevice(BluetoothDevice device, BuildContext context) async {
     try {
       await device.connect();
     } catch (e) {
@@ -50,8 +48,7 @@ class BlueManager {
   }
 
   // DISCOVER DEVICE SERVICES
-  Future<List<BluetoothService>> discoverDeviceServices(
-      BluetoothDevice device) async {
+  Future<List<BluetoothService>> discoverDeviceServices(BluetoothDevice device) async {
     final serv = await device.discoverServices();
     return serv;
   }
@@ -98,15 +95,17 @@ class BlueManager {
     print(service.uuid);
   }
 
-  setListener(
-      BluetoothCharacteristic characteristic, BuildContext context) async {
+  setListener(BluetoothCharacteristic characteristic, BuildContext context) async {
     await characteristic.setNotifyValue(true);
     characteristic.value.listen((vue) {
       print("New value for ${characteristic.uuid} is $vue");
-      if (vue.length > 0)
+      if (vue.length > 0 && vue[1] != null) {
         context.bloc<ConnectedDeviceCubit>().updateCurrentHeartRate(vue[1]);
-      context.bloc<MeasurmentCubit>().addHeartbeatMeasurment(
-          HeartBeatMeasure(date: DateTime.now(), heartBeat: vue[1]));
+        context.bloc<MeasurmentCubit>().addHeartbeatMeasurment(Measure(
+            date: DateTime.now(),
+            measure: vue[1],
+            id: context.bloc<MeasurmentCubit>().state.heartbeatMeasure.length));
+      }
     });
   }
 
@@ -122,12 +121,10 @@ class BlueManager {
     });
   }
 
-  BluetoothService findService(
-      List<BluetoothService> services, String serviceUUID) {
+  BluetoothService findService(List<BluetoothService> services, String serviceUUID) {
     try {
-      final service = services.firstWhere(
-          (element) => element.uuid.toString().contains(serviceUUID),
-          orElse: null);
+      final service = services
+          .firstWhere((element) => element.uuid.toString().contains(serviceUUID), orElse: null);
       return service;
     } catch (e) {
       print(e);

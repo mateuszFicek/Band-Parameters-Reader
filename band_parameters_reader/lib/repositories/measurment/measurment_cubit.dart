@@ -1,4 +1,4 @@
-import 'package:band_parameters_reader/models/heart_beat_measure.dart';
+import 'package:band_parameters_reader/models/measure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,8 +9,8 @@ class MeasurmentCubit extends Cubit<MeasurmentState> {
 
   MeasurmentCubit(this.context) : super(MeasurmentInitial());
 
-  addHeartbeatMeasurment(HeartBeatMeasure measure) {
-    final List<HeartBeatMeasure> measures = state.heartbeatMeasure;
+  addHeartbeatMeasurment(Measure measure) {
+    final List<Measure> measures = state.heartbeatMeasure;
     measures.add(measure);
     state.copyWith(heartbeatMeasure: measures);
   }
