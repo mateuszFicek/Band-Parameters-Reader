@@ -12,6 +12,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'measurment_summary.dart';
+
 class ConnectedDevicePage extends StatefulWidget {
   const ConnectedDevicePage({Key key}) : super(key: key);
 
@@ -196,8 +198,8 @@ class _ConnectedDevicePageState extends State<ConnectedDevicePage> {
               color: UIColors.GRADIENT_DARK_COLOR,
               onPressed: () {
                 pauseMeasure();
-//                Navigator.of(context)
-//                    .push(MaterialPageRoute(builder: (context) => BitalinoMeasurmentSummary()));
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => MeasurmentSummary()));
               },
               child: Text(
                 'Zakończ pomiar',

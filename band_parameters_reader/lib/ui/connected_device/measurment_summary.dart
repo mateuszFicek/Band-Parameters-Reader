@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:band_parameters_reader/models/measure.dart';
 import 'package:band_parameters_reader/repositories/bitalino/bitalino_cubit.dart';
+import 'package:band_parameters_reader/repositories/measurment/measurment_cubit.dart';
 import 'package:band_parameters_reader/utils/colors.dart';
 import 'package:band_parameters_reader/widgets/chart.dart';
 import 'package:csv/csv.dart';
@@ -12,21 +13,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
-class BitalinoMeasurmentSummary extends StatefulWidget {
+class MeasurmentSummary extends StatefulWidget {
   @override
-  _BitalinoMeasurmentSummaryState createState() => _BitalinoMeasurmentSummaryState();
+  _MeasurmentSummaryState createState() => _MeasurmentSummaryState();
 }
 
-class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
+class _MeasurmentSummaryState extends State<MeasurmentSummary> {
   String measurmentTitle;
   TextEditingController _textEditingController = TextEditingController();
   File file;
-  int dropdownValue = 1;
   SfRangeValues _values;
-  bool first = false;
-  bool second = false;
-  bool third = false;
-  bool fourth = false;
 
   @override
   void initState() {
@@ -40,11 +36,11 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
     measurmentTitle = "pomiar_$dateFormatted";
   }
 
-  void initRange() {
-    Future.delayed(
+  void initRange() async {
+    await Future.delayed(
         Duration.zero,
-        () => _values =
-            SfRangeValues(0.0, context.bloc<BitalinoCubit>().state.measure[0].length.toDouble()));
+        () => _values = SfRangeValues(
+            0.0, context.bloc<MeasurmentCubit>().state.heartbeatMeasure.length.toDouble()));
   }
 
   @override
@@ -67,12 +63,7 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
               children: [
                 _chartBuilder(),
                 _slider(),
-                SizedBox(height: 16),
-                _inputPicker(),
-                SizedBox(height: 24),
-                Text("Generuj plik dla wejść: ",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                _checkboxes(),
+                SizedBox(height: 160),
                 _titleInput(),
                 SizedBox(height: 16),
               ],
@@ -85,14 +76,14 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
   }
 
   Widget _slider() {
-    return BlocBuilder<BitalinoCubit, BitalinoState>(builder: (_, state) {
+    return BlocBuilder<MeasurmentCubit, MeasurmentState>(builder: (_, state) {
       return Container(
           height: 50,
-          width: double.infinity,
+          width: MediaQuery.of(context).size.width,
           child: SfRangeSlider(
             activeColor: Color(0xFFDCD8FD),
             min: 0.0,
-            max: state.measure[0].length.toDouble(),
+            max: state.heartbeatMeasure.length.toDouble(),
             values: _values,
             interval: 20,
             stepSize: 1,
@@ -111,9 +102,13 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
 
   Widget _chartBuilder() {
     List<Measure> measures;
-    return BlocBuilder<BitalinoCubit, BitalinoState>(builder: (_, state) {
-      measures = List<Measure>.from(state.measure[dropdownValue - 1]
-          .getRange((_values.start as double).round(), (_values.end as double).round()));
+    return BlocBuilder<MeasurmentCubit, MeasurmentState>(builder: (_, state) {
+      if (_values == null)
+        _values = SfRangeValues(
+            0.0, context.bloc<MeasurmentCubit>().state.heartbeatMeasure.length.toDouble());
+      measures = List<Measure>.from(state.heartbeatMeasure)
+          .getRange((_values.start as double).round(), (_values.end as double).round())
+          .toList();
 
       return Container(
           height: 450,
@@ -123,88 +118,6 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
             canZoom: true,
           ));
     });
-  }
-
-  Widget _inputPicker() {
-    return DropdownButton<int>(
-      value: dropdownValue,
-      icon: Icon(Icons.arrow_drop_down),
-      iconSize: 24,
-      isExpanded: true,
-      elevation: 16,
-      style: TextStyle(color: Colors.black, fontSize: 16),
-      underline: Container(
-        height: 1.5,
-        color: UIColors.GRADIENT_DARK_COLOR,
-      ),
-      onChanged: (int newValue) {
-        setState(() {
-          dropdownValue = newValue;
-        });
-      },
-      items: <int>[1, 2, 3, 4].map<DropdownMenuItem<int>>((int value) {
-        return DropdownMenuItem<int>(
-          value: value,
-          child: Text(
-            "Wejście A${value}",
-            textAlign: TextAlign.center,
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _checkboxes() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Checkbox(
-              activeColor: Color(0xFF6151F6),
-              value: first,
-              onChanged: (value) {
-                setState(() {
-                  first = value;
-                });
-              }),
-          Text("A1"),
-        ]),
-        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Checkbox(
-              activeColor: Color(0xFF6151F6),
-              value: second,
-              onChanged: (value) {
-                setState(() {
-                  second = value;
-                });
-              }),
-          Text("A2"),
-        ]),
-        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Checkbox(
-              activeColor: Color(0xFF6151F6),
-              value: third,
-              onChanged: (value) {
-                setState(() {
-                  third = value;
-                });
-              }),
-          Text("A3"),
-        ]),
-        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Checkbox(
-              activeColor: Color(0xFF6151F6),
-              value: fourth,
-              onChanged: (value) {
-                setState(() {
-                  fourth = value;
-                });
-              }),
-          Text("A4"),
-        ]),
-      ],
-    );
   }
 
   Widget _titleInput() {
@@ -278,33 +191,26 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
 
   getCsv() async {
     String filePath;
-    List<Measure> measure1 = context.bloc<BitalinoCubit>().state.measure[0];
-    List<Measure> measure2 = context.bloc<BitalinoCubit>().state.measure[1];
-    List<Measure> measure3 = context.bloc<BitalinoCubit>().state.measure[2];
-    List<Measure> measure4 = context.bloc<BitalinoCubit>().state.measure[3];
+    List<Measure> associateList = context.bloc<MeasurmentCubit>().state.heartbeatMeasure;
 
     List<List<dynamic>> rows = List<List<dynamic>>();
     List<dynamic> row = List();
     row.add("Id");
-    if (first) row.add("Pomiar 1");
-    if (second) row.add("Pomiar 2");
-    if (third) row.add("Pomiar 3");
-    if (fourth) row.add("Pomiar 4");
+    row.add("Pomiar");
     row.add("Data");
     rows.add(row);
-    for (int i = 0; i < measure1.length; i++) {
+    for (int i = 0; i < associateList.length; i++) {
       List<dynamic> row = List();
-      row.add(measure1[i].id);
-      if (first) row.add(measure1[i].measure);
-      if (second) row.add(measure2[i].measure);
-      if (third) row.add(measure3[i].measure);
-      if (fourth) row.add(measure4[i].measure);
-      row.add(measure1[i].date.toString());
+      row.add(associateList[i].id);
+      row.add(associateList[i].measure);
+      row.add(associateList[i].date.toString());
+      print(associateList[i].date);
       rows.add(row);
     }
 
     String dir = (await getExternalStorageDirectory()).absolute.path + "/";
     filePath = "$dir";
+    print(" FILE " + filePath);
     String fullPath = filePath + "$measurmentTitle.csv";
     File f = new File(fullPath);
 
