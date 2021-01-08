@@ -2,18 +2,21 @@ part of 'measurment_cubit.dart';
 
 @immutable
 class MeasurmentState {
-  final List<HeartBeatMeasure> heartbeatMeasure;
+  final List<Measure> heartbeatMeasure;
+  final bool isMeasuring;
 
-  MeasurmentState({this.heartbeatMeasure});
+  MeasurmentState({this.heartbeatMeasure, this.isMeasuring});
 
   MeasurmentState copyWith({
-    List<HeartBeatMeasure> heartbeatMeasure,
+    List<Measure> heartbeatMeasure,
+    bool isMeasuring,
   }) {
     return MeasurmentState(
-        heartbeatMeasure: heartbeatMeasure ?? this.heartbeatMeasure);
+        heartbeatMeasure: heartbeatMeasure ?? this.heartbeatMeasure,
+        isMeasuring: isMeasuring ?? this.isMeasuring);
   }
 }
 
 class MeasurmentInitial extends MeasurmentState {
-  MeasurmentInitial() : super(heartbeatMeasure: []);
+  MeasurmentInitial() : super(heartbeatMeasure: [], isMeasuring: false);
 }
