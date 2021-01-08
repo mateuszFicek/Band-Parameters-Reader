@@ -41,10 +41,13 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
   }
 
   void initRange() {
-    Future.delayed(
-        Duration.zero,
-        () => _values =
-            SfRangeValues(0.0, context.bloc<BitalinoCubit>().state.measure[0].length.toDouble()));
+    Future.delayed(Duration.zero, () {
+      if (context.bloc<BitalinoCubit>().state.measure[0].length.toDouble() < 2000)
+        _values =
+            SfRangeValues(0.0, context.bloc<BitalinoCubit>().state.measure[0].length.toDouble());
+      else
+        _values = SfRangeValues(0.0, 2000.0);
+    });
   }
 
   @override
@@ -94,7 +97,7 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
             min: 0.0,
             max: state.measure[0].length.toDouble(),
             values: _values,
-            interval: 20,
+            interval: (state.measure[0].length / 8).roundToDouble(),
             stepSize: 1,
             showTicks: true,
             showLabels: true,
@@ -102,7 +105,12 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
             minorTicksPerInterval: 1,
             onChanged: (SfRangeValues values) {
               setState(() {
-                _values = values;
+                if (values.end != _values.end && values.end - values.start > 2000)
+                  _values = SfRangeValues(values.end - 2000, values.end);
+                else if (values.start != _values.start && values.end - values.start > 2000)
+                  _values = SfRangeValues(values.start, values.start+2000);
+                else
+                  _values = values;
               });
             },
           ));
@@ -112,6 +120,13 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
   Widget _chartBuilder() {
     List<Measure> measures;
     return BlocBuilder<BitalinoCubit, BitalinoState>(builder: (_, state) {
+      if (_values == null) {
+        if (context.bloc<BitalinoCubit>().state.measure[0].length.toDouble() < 2000)
+          _values =
+              SfRangeValues(0.0, context.bloc<BitalinoCubit>().state.measure[0].length.toDouble());
+        else
+          _values = SfRangeValues(0.0, 2000.0);
+      }
       measures = List<Measure>.from(state.measure[dropdownValue - 1]
           .getRange((_values.start as double).round(), (_values.end as double).round()));
 
@@ -277,6 +292,7 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
   }
 
   getCsv() async {
+    final start = DateTime.now();
     String filePath;
     List<Measure> measure1 = context.bloc<BitalinoCubit>().state.measure[0];
     List<Measure> measure2 = context.bloc<BitalinoCubit>().state.measure[1];
@@ -310,6 +326,8 @@ class _BitalinoMeasurmentSummaryState extends State<BitalinoMeasurmentSummary> {
 
     String csv = const ListToCsvConverter().convert(rows);
     file = await f.writeAsString(csv);
+    print("Czas wykonania ${DateTime.now().difference(start).inMilliseconds}");
+
     if (file != null) await shareFile(fullPath);
   }
 

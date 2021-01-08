@@ -48,7 +48,7 @@ class BitalinoManager {
 
   Future<void> startAcquisition() async {
     try {
-      await bitalinoController.start([0, 1, 2, 3], Frequency.HZ10, numberOfSamples: 10,
+      await bitalinoController.start([0, 1, 2, 3], Frequency.HZ1000, numberOfSamples: 10,
           onDataAvailable: (frame) {
         for (int i = 0; i < 4; i++) {
           Measure measure = Measure(

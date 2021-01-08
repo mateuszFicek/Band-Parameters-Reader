@@ -85,7 +85,7 @@ class _MeasurmentSummaryState extends State<MeasurmentSummary> {
             min: 0.0,
             max: state.heartbeatMeasure.length.toDouble(),
             values: _values,
-            interval: 20,
+            interval: (state.heartbeatMeasure.length / 8).roundToDouble(),
             stepSize: 1,
             showTicks: true,
             showLabels: true,
