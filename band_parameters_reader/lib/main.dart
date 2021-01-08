@@ -2,7 +2,6 @@ import 'package:band_parameters_reader/ui/connected_device/connected_device.dart
 import 'package:band_parameters_reader/ui/main/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'di/provider_container.dart';
 

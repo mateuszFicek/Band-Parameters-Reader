@@ -41,5 +41,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+    <string>This application needs access to bluetooth to communicate with BITalino device</string>
+
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>This application needs access to BLE to communicate with BITalino device</string>
 </dict>
 </plist>

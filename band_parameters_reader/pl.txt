@@ -1,0 +1,531 @@
+@startuml
+set namespaceSeparator ::
+
+class "band_parameters_reader::ui::connected_device::connected_device.dart::ConnectedDevicePage" {
+  +_ConnectedDevicePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::ui::connected_device::connected_device.dart::ConnectedDevicePage"
+
+class "band_parameters_reader::ui::connected_device::connected_device.dart::_ConnectedDevicePageState" {
+  +ConnectedDeviceCubit connectedDeviceCubit
+  +MeasurmentCubit measurmentCubit
+  +List<BluetoothService> services
+  +BluetoothCharacteristic heartRateCharacteristic
+  +void initState()
+  +void initDevice()
+  -Future _updateBattery()
+  -void _setHeartRateListener()
+  +Widget build()
+  -Widget _deviceNameText()
+  -Widget _batteryAndHeartRateRow()
+  -Widget _batteryBox()
+  -Widget _endButton()
+  -Widget _heartRateBox()
+  -Widget _pauseButton()
+  +void pauseMeasure()
+  +void resumeMeasure()
+  -Widget _measures()
+  -dynamic _printDuration()
+  -Widget _textWithValue()
+  -TextStyle _textStyle()
+  -TextStyle _valueStyle()
+  +void dispose()
+}
+
+"band_parameters_reader::ui::connected_device::connected_device.dart::_ConnectedDevicePageState" o-- "band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceCubit"
+"band_parameters_reader::ui::connected_device::connected_device.dart::_ConnectedDevicePageState" o-- "band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentCubit"
+"band_parameters_reader::ui::connected_device::connected_device.dart::_ConnectedDevicePageState" o-- "flutter_blue::flutter_blue.dart::BluetoothCharacteristic"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::ui::connected_device::connected_device.dart::_ConnectedDevicePageState"
+
+class "band_parameters_reader::ui::connected_device::measurment_summary.dart::MeasurmentSummary" {
+  +_MeasurmentSummaryState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::ui::connected_device::measurment_summary.dart::MeasurmentSummary"
+
+class "band_parameters_reader::ui::connected_device::measurment_summary.dart::_MeasurmentSummaryState" {
+  +dynamic measurmentTitle
+  -TextEditingController _textEditingController
+  +File file
+  -SfRangeValues _values
+  +void initState()
+  +void initTitle()
+  +void initRange()
+  +Widget build()
+  -Widget _slider()
+  -Widget _chartBuilder()
+  -Widget _titleInput()
+  -Widget _buttons()
+  -Widget _endButton()
+  +Widget saveAndShareButton()
+  +dynamic getCsv()
+  +dynamic shareFile()
+}
+
+"band_parameters_reader::ui::connected_device::measurment_summary.dart::_MeasurmentSummaryState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"band_parameters_reader::ui::connected_device::measurment_summary.dart::_MeasurmentSummaryState" o-- "dart::io::File"
+"band_parameters_reader::ui::connected_device::measurment_summary.dart::_MeasurmentSummaryState" o-- "syncfusion_flutter_sliders::src::common.dart::SfRangeValues"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::ui::connected_device::measurment_summary.dart::_MeasurmentSummaryState"
+
+class "band_parameters_reader::ui::bitalino::bitalino_measurment_summary.dart::BitalinoMeasurmentSummary" {
+  +_BitalinoMeasurmentSummaryState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::ui::bitalino::bitalino_measurment_summary.dart::BitalinoMeasurmentSummary"
+
+class "band_parameters_reader::ui::bitalino::bitalino_measurment_summary.dart::_BitalinoMeasurmentSummaryState" {
+  +dynamic measurmentTitle
+  -TextEditingController _textEditingController
+  +File file
+  +int dropdownValue
+  -SfRangeValues _values
+  +bool first
+  +bool second
+  +bool third
+  +bool fourth
+  +void initState()
+  +void initTitle()
+  +void initRange()
+  +Widget build()
+  -Widget _slider()
+  -Widget _chartBuilder()
+  -Widget _inputPicker()
+  -Widget _checkboxes()
+  -Widget _titleInput()
+  -Widget _buttons()
+  -Widget _endButton()
+  +Widget saveAndShareButton()
+  +dynamic getCsv()
+  +dynamic shareFile()
+}
+
+"band_parameters_reader::ui::bitalino::bitalino_measurment_summary.dart::_BitalinoMeasurmentSummaryState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"band_parameters_reader::ui::bitalino::bitalino_measurment_summary.dart::_BitalinoMeasurmentSummaryState" o-- "dart::io::File"
+"band_parameters_reader::ui::bitalino::bitalino_measurment_summary.dart::_BitalinoMeasurmentSummaryState" o-- "syncfusion_flutter_sliders::src::common.dart::SfRangeValues"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::ui::bitalino::bitalino_measurment_summary.dart::_BitalinoMeasurmentSummaryState"
+
+class "band_parameters_reader::ui::bitalino::bitalino_measurment.dart::BitalinoMeasurment" {
+  +dynamic address
+  +_BitalinoMeasurmentState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::ui::bitalino::bitalino_measurment.dart::BitalinoMeasurment"
+
+class "band_parameters_reader::ui::bitalino::bitalino_measurment.dart::_BitalinoMeasurmentState" {
+  +int dropdownValue
+  +BitalinoManager manager
+  +void initState()
+  +Future isConnected()
+  +Widget build()
+  -Widget _body()
+  -Widget _chartBuilder()
+  -Widget _pauseButton()
+  +void pauseMeasure()
+  +void resumeMeasure()
+  -Widget _measures()
+  -dynamic _printDuration()
+  -Widget _textWithValue()
+  -TextStyle _textStyle()
+  -TextStyle _valueStyle()
+  -Widget _inputPicker()
+}
+
+"band_parameters_reader::ui::bitalino::bitalino_measurment.dart::_BitalinoMeasurmentState" o-- "band_parameters_reader::data::bitalino_manager.dart::BitalinoManager"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::ui::bitalino::bitalino_measurment.dart::_BitalinoMeasurmentState"
+
+class "band_parameters_reader::ui::main::bluetooth_l_e_widget.dart::BluetoothLEDevices" {
+  +_BluetoothLEDevicesState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::ui::main::bluetooth_l_e_widget.dart::BluetoothLEDevices"
+
+class "band_parameters_reader::ui::main::bluetooth_l_e_widget.dart::_BluetoothLEDevicesState" {
+  +bool isSearchingForBLE
+  -Widget _infoText
+  -Widget _availableDevicesText
+  -Widget _availableDevicesListView
+  +TextStyle informationTextStyle
+  -Widget _bleButton
+  +bool wantKeepAlive
+  +void initState()
+  +Widget build()
+  -Widget _availableDeviceContainer()
+  -Widget _connectedDeviceContainer()
+  +void connectToDevice()
+  -Widget _disconnectedDeviceContainer()
+  -dynamic _getConnectionState()
+}
+
+"band_parameters_reader::ui::main::bluetooth_l_e_widget.dart::_BluetoothLEDevicesState" o-- "flutter::src::widgets::framework.dart::Widget"
+"band_parameters_reader::ui::main::bluetooth_l_e_widget.dart::_BluetoothLEDevicesState" o-- "flutter::src::painting::text_style.dart::TextStyle"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::ui::main::bluetooth_l_e_widget.dart::_BluetoothLEDevicesState"
+"flutter::src::widgets::automatic_keep_alive.dart::AutomaticKeepAliveClientMixin<T>" <|-- "band_parameters_reader::ui::main::bluetooth_l_e_widget.dart::_BluetoothLEDevicesState"
+
+class "band_parameters_reader::ui::main::bluetooth_devices.dart::BluetoothDevices" {
+  +_BluetoothDevicesState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::ui::main::bluetooth_devices.dart::BluetoothDevices"
+
+class "band_parameters_reader::ui::main::bluetooth_devices.dart::_BluetoothDevicesState" {
+  -Widget _availableBluetoothListView
+  -Widget _classicButton
+  +TextStyle informationTextStyle
+  +bool wantKeepAlive
+  +Widget build()
+  -Widget _availableDeviceContainer()
+  -Widget _connectedDeviceContainer()
+  -Widget _disconnectedDeviceContainer()
+}
+
+"band_parameters_reader::ui::main::bluetooth_devices.dart::_BluetoothDevicesState" o-- "flutter::src::widgets::framework.dart::Widget"
+"band_parameters_reader::ui::main::bluetooth_devices.dart::_BluetoothDevicesState" o-- "flutter::src::painting::text_style.dart::TextStyle"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::ui::main::bluetooth_devices.dart::_BluetoothDevicesState"
+"flutter::src::widgets::automatic_keep_alive.dart::AutomaticKeepAliveClientMixin<T>" <|-- "band_parameters_reader::ui::main::bluetooth_devices.dart::_BluetoothDevicesState"
+
+class "band_parameters_reader::ui::main::main.dart::BandParametersReaderHomePage" {
+  +_BandParametersReaderHomePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::ui::main::main.dart::BandParametersReaderHomePage"
+
+class "band_parameters_reader::ui::main::main.dart::_BandParametersReaderHomePageState" {
+  -TabController _tabController
+  -TextStyle _activeTextStyle
+  -TextStyle _inactiveTextStyle
+  +void initState()
+  +Widget build()
+  -Widget _bottomAppBar()
+  -Widget _topBarText()
+  -Widget _segmentedControl()
+  -Widget _welcomeText()
+}
+
+"band_parameters_reader::ui::main::main.dart::_BandParametersReaderHomePageState" o-- "flutter::src::material::tab_controller.dart::TabController"
+"band_parameters_reader::ui::main::main.dart::_BandParametersReaderHomePageState" o-- "flutter::src::painting::text_style.dart::TextStyle"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::ui::main::main.dart::_BandParametersReaderHomePageState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin<T>" <|-- "band_parameters_reader::ui::main::main.dart::_BandParametersReaderHomePageState"
+
+class "band_parameters_reader::di::provider_container.dart::ProviderContainer" {
+  +Widget child
+  +State createState()
+}
+
+"band_parameters_reader::di::provider_container.dart::ProviderContainer" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::di::provider_container.dart::ProviderContainer"
+
+class "band_parameters_reader::di::provider_container.dart::ProviderContainerState" {
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::di::provider_container.dart::ProviderContainerState"
+
+class "band_parameters_reader::utils::ble_gatt_constants.dart::BleGATTServices" {
+  {static} +String HEART_RATE_SERVICE
+  {static} +String BATTERY_SERVICE
+  {static} +String MI_BAND_SERVICE
+  {static} +String ALERT_NOTIFICATION_SERVICE
+}
+
+class "band_parameters_reader::utils::ble_gatt_constants.dart::BleGATTCharacteristics" {
+  {static} +String HEART_RATE_MEASURMENT
+  {static} +String HEART_RATE_CONTROLL_POINT
+  {static} +String NEW_ALERT
+  {static} +String BATTERY_LEVEL
+  {static} +String STEPS
+  {static} +String SENSORS
+  {static} +String SENSORS_DATA
+}
+
+class "band_parameters_reader::utils::colors.dart::UIColors" {
+  {static} +Color BACKGROUND_COLOR
+  {static} +Color TILE_BACKGROUND_COLOR
+  {static} +Color LIGHT_FONT_COLOR
+  {static} +Color GRADIENT_LIGHT_COLOR
+  {static} +Color GRADIENT_DARK_COLOR
+}
+
+"band_parameters_reader::utils::colors.dart::UIColors" o-- "dart::ui::Color"
+
+class "band_parameters_reader::utils::constants.dart::Constants" {
+  {static} +List<String> COMPATIBLE_DEVICES
+}
+
+class "band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceCubit" {
+  +BuildContext context
+  +void setConnectedDevice()
+  +void updateCurrentHeartRate()
+  +void setDeviceServices()
+  +void setListenerForCharacteristics()
+  +void disableListenerForCharacteristics()
+  +dynamic disconnectFromDevice()
+  +void setCurrentBattery()
+}
+
+"band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceCubit" o-- "flutter::src::widgets::framework.dart::BuildContext"
+"bloc::src::cubit.dart::Cubit<State>" <|-- "band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceCubit"
+
+class "band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceState" {
+  +BluetoothDevice connectedDevice
+  +int currentHeartRate
+  +List<BluetoothService> services
+  +int batteryLevel
+  +dynamic lastHeartRateMeasureTime
+  +ConnectedDeviceState copyWith()
+}
+
+"band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceState" o-- "flutter_blue::flutter_blue.dart::BluetoothDevice"
+
+class "band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceInitial" {
+}
+
+"band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceState" <|-- "band_parameters_reader::repositories::connected_device::connected_device_cubit.dart::ConnectedDeviceInitial"
+
+class "band_parameters_reader::repositories::bitalino::bitalino_cubit.dart::BitalinoCubit" {
+  +BuildContext context
+  +dynamic setDevice()
+  +dynamic addMeasure()
+  +dynamic startMeasure()
+  +dynamic pauseMeasure()
+  +dynamic setInitial()
+}
+
+"band_parameters_reader::repositories::bitalino::bitalino_cubit.dart::BitalinoCubit" o-- "flutter::src::widgets::framework.dart::BuildContext"
+"bloc::src::cubit.dart::Cubit<State>" <|-- "band_parameters_reader::repositories::bitalino::bitalino_cubit.dart::BitalinoCubit"
+
+class "band_parameters_reader::repositories::bitalino::bitalino_cubit.dart::BitalinoState" {
+  +List<List<Measure>> measure
+  +bool isCollectingData
+  +BitalinoState copyWith()
+}
+
+class "band_parameters_reader::repositories::bitalino::bitalino_cubit.dart::BitalinoInitial" {
+}
+
+"band_parameters_reader::repositories::bitalino::bitalino_cubit.dart::BitalinoState" <|-- "band_parameters_reader::repositories::bitalino::bitalino_cubit.dart::BitalinoInitial"
+
+class "band_parameters_reader::repositories::available_devices::available_devices_cubit.dart::AvailableDevicesCubit" {
+  +BuildContext context
+  +void toggleIsScanning()
+  +void getAvailableDevices()
+}
+
+"band_parameters_reader::repositories::available_devices::available_devices_cubit.dart::AvailableDevicesCubit" o-- "flutter::src::widgets::framework.dart::BuildContext"
+"bloc::src::cubit.dart::Cubit<State>" <|-- "band_parameters_reader::repositories::available_devices::available_devices_cubit.dart::AvailableDevicesCubit"
+
+class "band_parameters_reader::repositories::available_devices::available_devices_cubit.dart::AvailableDevicesState" {
+  +List<BluetoothDevice> availableDevices
+  +bool isScanning
+  +AvailableDevicesState copyWith()
+}
+
+class "band_parameters_reader::repositories::available_devices::available_devices_cubit.dart::AvailableDevicesInitial" {
+}
+
+"band_parameters_reader::repositories::available_devices::available_devices_cubit.dart::AvailableDevicesState" <|-- "band_parameters_reader::repositories::available_devices::available_devices_cubit.dart::AvailableDevicesInitial"
+
+class "band_parameters_reader::repositories::bluetooth_devices::bluetooth_devices_cubit.dart::BluetoothDevicesCubit" {
+  +BuildContext context
+  +void toggleIsScanning()
+  +void addDevice()
+  +void getAvailableDevices()
+}
+
+"band_parameters_reader::repositories::bluetooth_devices::bluetooth_devices_cubit.dart::BluetoothDevicesCubit" o-- "flutter::src::widgets::framework.dart::BuildContext"
+"bloc::src::cubit.dart::Cubit<State>" <|-- "band_parameters_reader::repositories::bluetooth_devices::bluetooth_devices_cubit.dart::BluetoothDevicesCubit"
+
+class "band_parameters_reader::repositories::bluetooth_devices::bluetooth_devices_cubit.dart::BluetoothDevicesState" {
+  +List<BluetoothDevice> availableDevices
+  +bool isScanning
+  +BluetoothDevicesState copyWith()
+}
+
+class "band_parameters_reader::repositories::bluetooth_devices::bluetooth_devices_cubit.dart::AvailableDevicesInitial" {
+}
+
+"band_parameters_reader::repositories::bluetooth_devices::bluetooth_devices_cubit.dart::BluetoothDevicesState" <|-- "band_parameters_reader::repositories::bluetooth_devices::bluetooth_devices_cubit.dart::AvailableDevicesInitial"
+
+class "band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentCubit" {
+  +BuildContext context
+  +dynamic addHeartbeatMeasurment()
+  +dynamic pauseMeasure()
+  +dynamic startMeasure()
+  +dynamic setInitialState()
+}
+
+"band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentCubit" o-- "flutter::src::widgets::framework.dart::BuildContext"
+"bloc::src::cubit.dart::Cubit<State>" <|-- "band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentCubit"
+
+class "band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentState" {
+  +List<Measure> heartbeatMeasure
+  +bool isMeasuring
+  +MeasurmentState copyWith()
+}
+
+class "band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentInitial" {
+}
+
+"band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentState" <|-- "band_parameters_reader::repositories::measurment::measurment_cubit.dart::MeasurmentInitial"
+
+class "band_parameters_reader::models::measure.dart::Measure" {
+  +int measure
+  +int id
+  +DateTime date
+}
+
+class "band_parameters_reader::main.dart::MyApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "band_parameters_reader::main.dart::MyApp"
+
+class "band_parameters_reader::data::classic_bluetooth_manager.dart::ClassicBluetoothManager" {
+  +FlutterBluetoothSerial bluetooth
+  -StreamSubscription<BluetoothDiscoveryResult> _streamSubscription
+  +Future searchForDevices()
+  +Future connectToDevice()
+}
+
+"band_parameters_reader::data::classic_bluetooth_manager.dart::ClassicBluetoothManager" o-- "flutter_bluetooth_serial::flutter_bluetooth_serial.dart::FlutterBluetoothSerial"
+"band_parameters_reader::data::classic_bluetooth_manager.dart::ClassicBluetoothManager" o-- "dart::async::StreamSubscription<BluetoothDiscoveryResult>"
+
+class "band_parameters_reader::data::blue_manager.dart::BlueManager" {
+  +FlutterBlue flutterBlue
+  +List<BluetoothDevice> devices
+  +List<BluetoothService> services
+  +int value
+  +Future scanForAvailableDevices()
+  +Future connectToDevice()
+  +Future discoverDeviceServices()
+  +Future printChar()
+  +Future readChar()
+  +dynamic setListener()
+  +dynamic disableListener()
+  +dynamic closeConnection()
+  +BluetoothService findService()
+  +Future getDeviceBatteryLevel()
+}
+
+"band_parameters_reader::data::blue_manager.dart::BlueManager" o-- "flutter_blue::flutter_blue.dart::FlutterBlue"
+
+class "band_parameters_reader::data::bitalino_manager.dart::BitalinoManager" {
+  +BITalinoController bitalinoController
+  +BuildContext context
+  +List<Measure> measures
+  +void initialize()
+  +Future getState()
+  +bool connected()
+  +Future connectToDevice()
+  +Future startAcquisition()
+  +Future stopAcquisition()
+  +Future endConnection()
+}
+
+"band_parameters_reader::data::bitalino_manager.dart::BitalinoManager" o-- "bitalino::bitalino.dart::BITalinoController"
+"band_parameters_reader::data::bitalino_manager.dart::BitalinoManager" o-- "flutter::src::widgets::framework.dart::BuildContext"
+
+class "band_parameters_reader::widgets::information_text.dart::InformationText" {
+  +dynamic text
+  +TextStyle informationTextStyle
+  +Widget build()
+}
+
+"band_parameters_reader::widgets::information_text.dart::InformationText" o-- "flutter::src::painting::text_style.dart::TextStyle"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "band_parameters_reader::widgets::information_text.dart::InformationText"
+
+class "band_parameters_reader::widgets::connected_device::last_measurment_chart.dart::LastSessionChart" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "band_parameters_reader::widgets::connected_device::last_measurment_chart.dart::LastSessionChart"
+
+class "band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBarItem" {
+  +IconData iconData
+  +dynamic text
+}
+
+"band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBarItem" o-- "flutter::src::widgets::icon_data.dart::IconData"
+
+class "band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBar" {
+  +List<CustomBottomBarItem> items
+  +dynamic centerItemText
+  +double height
+  +double iconSize
+  +Color backgroundColor
+  +Color color
+  +Color selectedColor
+  +NotchedShape notchedShape
+  +void Function(int) onTabSelected
+  +State createState()
+}
+
+"band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBar" o-- "dart::ui::Color"
+"band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBar" o-- "flutter::src::painting::notched_shapes.dart::NotchedShape"
+"band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBar" o-- "flutter::src::foundation::basic_types.dart::void Function(int)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBar"
+
+class "band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBarState" {
+  -int _selectedIndex
+  -dynamic _updateIndex()
+  +Widget build()
+  -Widget _buildMiddleTabItem()
+  -Widget _buildTabItem()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::widgets::custom_bottom_bar.dart::CustomBottomBarState"
+
+class "band_parameters_reader::widgets::chart.dart::Chart" {
+  +List<Measure> data
+  +bool canZoom
+  +_ChartState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "band_parameters_reader::widgets::chart.dart::Chart"
+
+class "band_parameters_reader::widgets::chart.dart::_ChartState" {
+  -ChartSeriesController _chartSeriesController
+  +void initState()
+  +Widget build()
+}
+
+"band_parameters_reader::widgets::chart.dart::_ChartState" o-- "syncfusion_flutter_charts::charts.dart::ChartSeriesController"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "band_parameters_reader::widgets::chart.dart::_ChartState"
+
+class "band_parameters_reader::widgets::custom_button.dart::CustomButton" {
+  +void Function() onPressed
+  +dynamic text
+  +bool isPassive
+  +Color activeColor
+  +bool padded
+  +Widget build()
+}
+
+"band_parameters_reader::widgets::custom_button.dart::CustomButton" o-- "band_parameters_reader::widgets::custom_button.dart::void Function()"
+"band_parameters_reader::widgets::custom_button.dart::CustomButton" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "band_parameters_reader::widgets::custom_button.dart::CustomButton"
+
+class "band_parameters_reader::widgets::boxes::decoration_box.dart::DecorationBox" {
+  +Widget child
+  +dynamic text
+  +Color backgroundColor
+  +int heightScale
+  +Widget build()
+}
+
+"band_parameters_reader::widgets::boxes::decoration_box.dart::DecorationBox" o-- "flutter::src::widgets::framework.dart::Widget"
+"band_parameters_reader::widgets::boxes::decoration_box.dart::DecorationBox" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "band_parameters_reader::widgets::boxes::decoration_box.dart::DecorationBox"
+
+class "band_parameters_reader::widgets::boxes::square_box.dart::SquareBox" {
+  +Widget child
+  +dynamic text
+  +Widget build()
+}
+
+"band_parameters_reader::widgets::boxes::square_box.dart::SquareBox" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "band_parameters_reader::widgets::boxes::square_box.dart::SquareBox"
+
+
+@enduml
